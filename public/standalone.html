@@ -17,11 +17,13 @@
 }
 
 /* ── Base (cwmoriarty.com verbatim) ─────────────────────────── */
-body { font-family: Helvetica, Geneva, sans-serif; }
+body {
+  font-family: Helvetica, Geneva, sans-serif;
+  font-size: 13px;
+}
 a    { color: black; }
 li   { list-style-type: none; padding-left: 20px; }
 
-/* ── libleft (cwmoriarty.com verbatim) ──────────────────────── */
 .libleft {
   position: fixed;
   left: 10px;
@@ -57,7 +59,7 @@ fieldset {
 
 legend {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 13px;
   padding: 0;
   margin-bottom: 8px;
 }
@@ -141,7 +143,7 @@ textarea:user-invalid {
 
 textarea {
   font-family: monospace;
-  font-size: 12px;
+  font-size: 13px;
   width: 100%;
 }
 
@@ -214,7 +216,7 @@ input[type="button"]:disabled {
 /* File selector */
 input[type="file"]::file-selector-button {
   font-family: Helvetica, Geneva, sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   padding: 2px 8px;
   background: none;
   color: black;
@@ -289,21 +291,21 @@ table.data-table td {
   padding-bottom: 4px;
 }
 
-.meta-row   { margin-bottom: 6px; font-size: 12px; }
+.meta-row   { margin-bottom: 6px; font-size: 13px; }
 .meta-label { font-weight: bold; }
-.meta-val   { font-family: monospace; font-size: 11px; word-break: break-all; }
+.meta-val   { font-family: monospace; font-size: 13px; word-break: break-all; }
 
 /* SAN rows */
 .san-row { display: flex; gap: 6px; align-items: center; margin-bottom: 4px; }
-.san-row select { width: 100px; }
-.san-row input  { flex: 1; }
+.san-row select { width: 100px; font-size: 13px; }
+.san-row input  { flex: 1; font-size: 13px; }
 
 /* Notice */
 .notice-box {
   border-left: 3px solid black;
   background-color: #fafafa;
   padding: 5px 10px;
-  font-size: 12px;
+  font-size: 13px;
   margin-bottom: 10px;
 }
 .notice-success { border-left-color: #007700; background-color: #f4faf4; }
@@ -318,7 +320,7 @@ pre.code-output,
   border: 1px solid black;
   padding: 8px 10px;
   margin: 4px 0 8px 0;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.35;
   white-space: pre;
   overflow-x: auto;
@@ -342,7 +344,7 @@ pre.code-output,
   background-color: black;
   color: white;
   padding: 4px 10px;
-  font-size: 12px;
+  font-size: 13px;
   font-family: Helvetica, Geneva, sans-serif;
   display: none;
   z-index: 1000;
@@ -351,7 +353,7 @@ pre.code-output,
 
 .hidden { display: none !important; }
 
-.spinner { font-style: italic; font-size: 11px; }
+.spinner { font-style: italic; font-size: 13px; }
 
 </style>
 </head>
@@ -483,7 +485,7 @@ pre.code-output,
           </div>
           <div class="meta-row">
             <span class="meta-label">Serial Number:</span><br>
-            <span id="sourceSerial" class="meta-val" style="font-size:10px;">—</span>
+            <span id="sourceSerial" class="meta-val">—</span>
           </div>
         </div>
 
@@ -537,7 +539,7 @@ pre.code-output,
           <!-- Key & Digest Selection -->
           <div class="section-sub" style="margin-top: 14px;">
             Cryptographic Key Parameters &amp; Digest
-            <span id="keyMatchBadge" style="font-size: 11px; margin-left: 8px; color: var(--highlight-match);">[Exact Match]</span>
+            <span id="keyMatchBadge" style="margin-left: 8px; color: var(--highlight-match);">[Exact Match]</span>
           </div>
           <table class="form-table">
             <tr>
@@ -580,7 +582,7 @@ pre.code-output,
 
           <!-- Extensions -->
           <div class="section-sub" style="margin-top: 14px;">Requested Extensions</div>
-          <div style="margin-bottom: 14px; font-size: 12px;">
+          <div style="margin-bottom: 14px;">
             <label style="font-weight:normal; margin-right: 12px;">
               <input type="checkbox" id="checkSAN" checked> Include SAN Extension
             </label>
@@ -602,7 +604,7 @@ pre.code-output,
     <fieldset id="stepOutput" class="hidden">
       <legend>Step 3: Generated CSR, Key Pair &amp; Export Tools</legend>
 
-      <div class="notice-box notice-success" style="font-size: 11px;">
+      <div class="notice-box notice-success">
         <b>Security Note:</b> Key pair was generated in memory. Private key never leaves this machine.
       </div>
 
@@ -701,10 +703,35 @@ pre.code-output,
     <span id="toastMsg">Copied!</span>
   </div>
 
-  <!-- Bottom Left Link Widget (cwmoriarty.com style) -->
   <div class="libleft">
-    <small><a href="https://cwmoriarty.com">cwmoriarty.com</a></small>
+    <small><span id="flag">🌎</span> <span id="distance">0</span> miles away</small>
   </div>
+
+  <script type="text/javascript">
+  R = 3959 
+  fetch('https://ipapi.co/json').then(response => response.json()).then(data => {  
+    dLat = (atob("NDIuNTU=") - data.latitude) * Math.PI / 180
+    dLon = (atob("LTcwLjg3") - data.longitude) * Math.PI / 180
+    
+    a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(data.latitude * Math.PI / 180) * Math.cos(42.55 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2)
+     c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    distance = (R * c).toFixed(0); 
+    
+
+    codePoints = data.country_code.toUpperCase().split('').map(char => 127397 + char.charCodeAt())
+    flagEmoji=  String.fromCodePoint(...codePoints)
+
+
+    document.getElementById("distance").innerHTML = distance; 
+    document.getElementById("flag").innerHTML = flagEmoji;
+    })
+      .catch(error => {
+        console.error("Error fetching IP data:", error);
+      });
+  </script>
 
   <!-- Scripts -->
   <script>
@@ -1068,7 +1095,6 @@ function handleCertificateLoaded(rawInput) {
     elements.fetchBtnText.textContent = "Reset";
 
     elements.stepConfig.classList.remove("hidden");
-    elements.stepConfig.scrollIntoView({ behavior: "smooth", block: "start" });
     showToast("Certificate parsed successfully!");
   } catch (err) {
     console.error(err);

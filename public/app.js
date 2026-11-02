@@ -240,7 +240,6 @@ function handleCertificateLoaded(rawInput) {
     elements.fetchBtnText.textContent = "Reset";
 
     elements.stepConfig.classList.remove("hidden");
-    elements.stepConfig.scrollIntoView({ behavior: "smooth", block: "start" });
     showToast("Certificate parsed successfully!");
   } catch (err) {
     console.error(err);

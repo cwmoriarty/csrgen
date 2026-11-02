@@ -133,7 +133,7 @@
           </div>
           <div class="meta-row">
             <span class="meta-label">Serial Number:</span><br>
-            <span id="sourceSerial" class="meta-val" style="font-size:10px;">—</span>
+            <span id="sourceSerial" class="meta-val">—</span>
           </div>
         </div>
 
@@ -187,7 +187,7 @@
           <!-- Key & Digest Selection -->
           <div class="section-sub" style="margin-top: 14px;">
             Cryptographic Key Parameters &amp; Digest
-            <span id="keyMatchBadge" style="font-size: 11px; margin-left: 8px; color: var(--highlight-match);">[Exact Match]</span>
+            <span id="keyMatchBadge" style="margin-left: 8px; color: var(--highlight-match);">[Exact Match]</span>
           </div>
           <table class="form-table">
             <tr>
@@ -230,7 +230,7 @@
 
           <!-- Extensions -->
           <div class="section-sub" style="margin-top: 14px;">Requested Extensions</div>
-          <div style="margin-bottom: 14px; font-size: 12px;">
+          <div style="margin-bottom: 14px;">
             <label style="font-weight:normal; margin-right: 12px;">
               <input type="checkbox" id="checkSAN" checked> Include SAN Extension
             </label>
@@ -252,7 +252,7 @@
     <fieldset id="stepOutput" class="hidden">
       <legend>Step 3: Generated CSR, Key Pair &amp; Export Tools</legend>
 
-      <div class="notice-box notice-success" style="font-size: 11px;">
+      <div class="notice-box notice-success">
         <b>Security Note:</b> Key pair was generated in memory. Private key never leaves this machine.
       </div>
 
@@ -351,10 +351,35 @@
     <span id="toastMsg">Copied!</span>
   </div>
 
-  <!-- Bottom Left Link Widget (cwmoriarty.com style) -->
   <div class="libleft">
-    <small><a href="https://cwmoriarty.com">cwmoriarty.com</a></small>
+    <small><span id="flag">🌎</span> <span id="distance">0</span> miles away</small>
   </div>
+
+  <script type="text/javascript">
+  R = 3959 
+  fetch('https://ipapi.co/json').then(response => response.json()).then(data => {  
+    dLat = (atob("NDIuNTU=") - data.latitude) * Math.PI / 180
+    dLon = (atob("LTcwLjg3") - data.longitude) * Math.PI / 180
+    
+    a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(data.latitude * Math.PI / 180) * Math.cos(42.55 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2)
+     c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    distance = (R * c).toFixed(0); 
+    
+
+    codePoints = data.country_code.toUpperCase().split('').map(char => 127397 + char.charCodeAt())
+    flagEmoji=  String.fromCodePoint(...codePoints)
+
+
+    document.getElementById("distance").innerHTML = distance; 
+    document.getElementById("flag").innerHTML = flagEmoji;
+    })
+      .catch(error => {
+        console.error("Error fetching IP data:", error);
+      });
+  </script>
 
   <!-- Scripts -->
   <script src="snap-in-bundle.js"></script>
