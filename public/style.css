@@ -31,10 +31,8 @@ li   { list-style-type: none; padding-left: 20px; }
   padding: 20px 24px;
 }
 
-/* Header */
+/* Header - No HR */
 .app-header {
-  border-bottom: 1px solid black;
-  padding-bottom: 10px;
   margin-bottom: 16px;
 }
 
@@ -58,35 +56,39 @@ legend {
   margin-bottom: 8px;
 }
 
-/* Tabs */
+/* Tabs / Zippy (Bordered top-level options) */
 .tabs-nav {
   display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 4px;
+  border-bottom: 1px solid black;
+  margin-bottom: 12px;
 }
 
 .tab-btn {
-  background: none;
+  background: #f4f4f4;
   color: black;
-  border: none;
-  border-bottom: 1px solid transparent;
-  padding: 2px 0;
-  margin-right: 10px;
-  font-size: 14px;
+  border: 1px solid black;
+  border-bottom: none;
+  padding: 4px 12px;
+  margin-right: 0;
+  font-size: 13px;
   font-family: Helvetica, Geneva, sans-serif;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .tab-btn:hover {
-  color: black;
+  background: #e6e6e6;
+  text-decoration: none;
 }
 
 .tab-btn[aria-selected="true"] {
-  text-decoration: none;
+  background: white;
   font-weight: bold;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid white;
+  margin-bottom: -1px;
   cursor: default;
+  text-decoration: none;
 }
 
 .tab-panel {
@@ -164,15 +166,43 @@ input[type="button"]:disabled {
   cursor: not-allowed;
 }
 
-.btn-hero {
-  font-size: 14px;
-  font-weight: bold;
-  text-decoration: underline;
-  padding: 4px 0;
+/* Standard HTML Buttons for Fetch and Generate */
+#fetchUrlBtn,
+#generateCsrBtn,
+.btn-html {
+  appearance: auto;
+  -webkit-appearance: button;
+  background-color: #efefef;
+  color: black;
+  border: 1px solid #767676;
+  padding: 4px 12px;
+  font-family: Helvetica, Geneva, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 3px;
 }
 
-.btn-hero:hover {
+#fetchUrlBtn:hover,
+#generateCsrBtn:hover,
+.btn-html:hover {
+  background-color: #e5e5e5;
+  border-color: #4f4f4f;
   text-decoration: none;
+  font-weight: normal;
+}
+
+#fetchUrlBtn:active,
+#generateCsrBtn:active,
+.btn-html:active {
+  background-color: #d4d4d4;
+}
+
+#fetchUrlBtn:disabled,
+#generateCsrBtn:disabled,
+.btn-html:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* File selector */

@@ -14,7 +14,7 @@
 
     <!-- STEP 1: Provide Source Certificate -->
     <fieldset id="stepInput">
-      <legend>Step 1: Input Existing Certificate</legend>
+      <legend>Step 1: Cert Import</legend>
 
       <!-- Tab Buttons -->
       <div class="tabs-nav" role="tablist">
@@ -26,18 +26,14 @@
 
       <!-- Tab 1: URL Fetch -->
       <div class="tab-panel active" id="tabUrlPanel" role="tabpanel">
-        <table class="form-table" style="max-width: 650px;">
-          <tr>
-            <td class="label-cell"><label for="urlInput">URL:</label></td>
-            <td>
-              <input type="text" id="urlInput" placeholder="https://example.com or host.domain:8443" style="width: 320px;">
-              <button type="button" class="btn-primary" id="fetchUrlBtn">
-                <span id="fetchBtnSpinner" class="spinner hidden">(fetching...) </span>
-                <span id="fetchBtnText">Fetch Certificate</span>
-              </button>
-            </td>
-          </tr>
-        </table>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+          <label for="urlInput">URL:</label>
+          <input type="text" id="urlInput" placeholder="https://example.com or host.domain:8443" style="width: 320px;">
+          <button type="button" class="btn-html" id="fetchUrlBtn">
+            <span id="fetchBtnSpinner" class="spinner hidden">(fetching...) </span>
+            <span id="fetchBtnText">Fetch Certificate</span>
+          </button>
+        </div>
         <div id="urlErrorAlert" class="notice-box notice-error hidden"></div>
       </div>
 
@@ -93,10 +89,18 @@
 
     <!-- STEP 2: Parameters & Configuration -->
     <fieldset id="stepConfig" class="hidden">
-      <legend>Step 2: Configure CSR</legend>
+      <legend>Step 2: Inspect and Generate CSR</legend>
 
       <div class="notice-box notice-success">
         Cloned key cipher (<span id="bannerKeyType">RSA 2048</span>), signature digest, Subject DN hierarchy, and SANs from source certificate. Status: <span id="matchBadge" style="font-weight:bold;">100% Match</span>
+      </div>
+
+      <!-- Generate Button above cert details, below status -->
+      <div style="margin: 10px 0 14px 0;">
+        <button type="button" class="btn-html" id="generateCsrBtn">
+          <span id="genBtnSpinner" class="spinner hidden">(generating...) </span>
+          <span id="genBtnText">Generate CSR and Private Key</span>
+        </button>
       </div>
 
       <div class="step2-layout">
@@ -239,14 +243,6 @@
             <label style="font-weight:normal;">
               <input type="checkbox" id="checkBasicConstraints"> Include Basic Constraints (cA=FALSE)
             </label>
-          </div>
-
-          <!-- Submit Button -->
-          <div style="margin-top: 14px; padding-top: 8px; border-top: 1px solid #cccccc;">
-            <button type="button" class="btn-hero" id="generateCsrBtn">
-              <span id="genBtnSpinner" class="spinner hidden">(generating...) </span>
-              <span id="genBtnText">Generate CSR and Private Key</span>
-            </button>
           </div>
         </div>
       </div>

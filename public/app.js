@@ -60,6 +60,7 @@ l7iaRq+zVhSu0Gg/txxohQ4=
 // App State
 const state = {
   hasCompanionServer: false,
+  isCertLoaded: false,
   parsedCert: null,
   rawCertPem: "",
   generatedCsr: null,
@@ -202,6 +203,26 @@ function setupTabs() {
   });
 }
 
+// Reset Certificate Import
+function resetCertImport() {
+  state.parsedCert = null;
+  state.rawCertPem = "";
+  state.generatedCsr = null;
+  state.generatedKey = null;
+  state.generatedCnf = null;
+  state.decodedCsr = null;
+  state.isCertLoaded = false;
+
+  elements.stepConfig.classList.add("hidden");
+  elements.stepOutput.classList.add("hidden");
+  elements.urlInput.value = "";
+  elements.fileInput.value = "";
+  elements.pemTextarea.value = "";
+  elements.urlErrorAlert.classList.add("hidden");
+  elements.fetchBtnText.textContent = "Fetch Certificate";
+  showToast("Reset to initial state");
+}
+
 // Parse Certificate and Transition to Step 2
 function handleCertificateLoaded(rawInput) {
   try {
@@ -214,6 +235,9 @@ function handleCertificateLoaded(rawInput) {
     }
 
     populateConfigurationForm(parsed);
+
+    state.isCertLoaded = true;
+    elements.fetchBtnText.textContent = "Reset";
 
     elements.stepConfig.classList.remove("hidden");
     elements.stepConfig.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -662,6 +686,11 @@ async function copyToClipboard(text, successMsg) {
 function initEventListeners() {
   // 1. URL Fetch Form
   elements.fetchUrlBtn.addEventListener("click", async () => {
+    if (state.isCertLoaded) {
+      resetCertImport();
+      return;
+    }
+
     const url = elements.urlInput.value.trim();
     if (!url) {
       elements.urlInput.focus();
@@ -688,7 +717,11 @@ function initEventListeners() {
       elements.urlErrorAlert.classList.remove("hidden");
     } finally {
       elements.fetchBtnSpinner.classList.add("hidden");
-      elements.fetchBtnText.textContent = "Fetch Certificate";
+      if (state.isCertLoaded) {
+        elements.fetchBtnText.textContent = "Reset";
+      } else {
+        elements.fetchBtnText.textContent = "Fetch Certificate";
+      }
       elements.fetchUrlBtn.disabled = false;
     }
   });

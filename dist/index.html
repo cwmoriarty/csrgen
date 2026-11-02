@@ -37,10 +37,8 @@ li   { list-style-type: none; padding-left: 20px; }
   padding: 20px 24px;
 }
 
-/* Header */
+/* Header - No HR */
 .app-header {
-  border-bottom: 1px solid black;
-  padding-bottom: 10px;
   margin-bottom: 16px;
 }
 
@@ -64,35 +62,39 @@ legend {
   margin-bottom: 8px;
 }
 
-/* Tabs */
+/* Tabs / Zippy (Bordered top-level options) */
 .tabs-nav {
   display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 4px;
+  border-bottom: 1px solid black;
+  margin-bottom: 12px;
 }
 
 .tab-btn {
-  background: none;
+  background: #f4f4f4;
   color: black;
-  border: none;
-  border-bottom: 1px solid transparent;
-  padding: 2px 0;
-  margin-right: 10px;
-  font-size: 14px;
+  border: 1px solid black;
+  border-bottom: none;
+  padding: 4px 12px;
+  margin-right: 0;
+  font-size: 13px;
   font-family: Helvetica, Geneva, sans-serif;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .tab-btn:hover {
-  color: black;
+  background: #e6e6e6;
+  text-decoration: none;
 }
 
 .tab-btn[aria-selected="true"] {
-  text-decoration: none;
+  background: white;
   font-weight: bold;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid white;
+  margin-bottom: -1px;
   cursor: default;
+  text-decoration: none;
 }
 
 .tab-panel {
@@ -170,15 +172,43 @@ input[type="button"]:disabled {
   cursor: not-allowed;
 }
 
-.btn-hero {
-  font-size: 14px;
-  font-weight: bold;
-  text-decoration: underline;
-  padding: 4px 0;
+/* Standard HTML Buttons for Fetch and Generate */
+#fetchUrlBtn,
+#generateCsrBtn,
+.btn-html {
+  appearance: auto;
+  -webkit-appearance: button;
+  background-color: #efefef;
+  color: black;
+  border: 1px solid #767676;
+  padding: 4px 12px;
+  font-family: Helvetica, Geneva, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 3px;
 }
 
-.btn-hero:hover {
+#fetchUrlBtn:hover,
+#generateCsrBtn:hover,
+.btn-html:hover {
+  background-color: #e5e5e5;
+  border-color: #4f4f4f;
   text-decoration: none;
+  font-weight: normal;
+}
+
+#fetchUrlBtn:active,
+#generateCsrBtn:active,
+.btn-html:active {
+  background-color: #d4d4d4;
+}
+
+#fetchUrlBtn:disabled,
+#generateCsrBtn:disabled,
+.btn-html:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* File selector */
@@ -334,7 +364,7 @@ pre.code-output,
 
     <!-- STEP 1: Provide Source Certificate -->
     <fieldset id="stepInput">
-      <legend>Step 1: Input Existing Certificate</legend>
+      <legend>Step 1: Cert Import</legend>
 
       <!-- Tab Buttons -->
       <div class="tabs-nav" role="tablist">
@@ -346,18 +376,14 @@ pre.code-output,
 
       <!-- Tab 1: URL Fetch -->
       <div class="tab-panel active" id="tabUrlPanel" role="tabpanel">
-        <table class="form-table" style="max-width: 650px;">
-          <tr>
-            <td class="label-cell"><label for="urlInput">URL:</label></td>
-            <td>
-              <input type="text" id="urlInput" placeholder="https://example.com or host.domain:8443" style="width: 320px;">
-              <button type="button" class="btn-primary" id="fetchUrlBtn">
-                <span id="fetchBtnSpinner" class="spinner hidden">(fetching...) </span>
-                <span id="fetchBtnText">Fetch Certificate</span>
-              </button>
-            </td>
-          </tr>
-        </table>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+          <label for="urlInput">URL:</label>
+          <input type="text" id="urlInput" placeholder="https://example.com or host.domain:8443" style="width: 320px;">
+          <button type="button" class="btn-html" id="fetchUrlBtn">
+            <span id="fetchBtnSpinner" class="spinner hidden">(fetching...) </span>
+            <span id="fetchBtnText">Fetch Certificate</span>
+          </button>
+        </div>
         <div id="urlErrorAlert" class="notice-box notice-error hidden"></div>
       </div>
 
@@ -413,10 +439,18 @@ pre.code-output,
 
     <!-- STEP 2: Parameters & Configuration -->
     <fieldset id="stepConfig" class="hidden">
-      <legend>Step 2: Configure CSR</legend>
+      <legend>Step 2: Inspect and Generate CSR</legend>
 
       <div class="notice-box notice-success">
         Cloned key cipher (<span id="bannerKeyType">RSA 2048</span>), signature digest, Subject DN hierarchy, and SANs from source certificate. Status: <span id="matchBadge" style="font-weight:bold;">100% Match</span>
+      </div>
+
+      <!-- Generate Button above cert details, below status -->
+      <div style="margin: 10px 0 14px 0;">
+        <button type="button" class="btn-html" id="generateCsrBtn">
+          <span id="genBtnSpinner" class="spinner hidden">(generating...) </span>
+          <span id="genBtnText">Generate CSR and Private Key</span>
+        </button>
       </div>
 
       <div class="step2-layout">
@@ -559,14 +593,6 @@ pre.code-output,
             <label style="font-weight:normal;">
               <input type="checkbox" id="checkBasicConstraints"> Include Basic Constraints (cA=FALSE)
             </label>
-          </div>
-
-          <!-- Submit Button -->
-          <div style="margin-top: 14px; padding-top: 8px; border-top: 1px solid #cccccc;">
-            <button type="button" class="btn-hero" id="generateCsrBtn">
-              <span id="genBtnSpinner" class="spinner hidden">(generating...) </span>
-              <span id="genBtnText">Generate CSR and Private Key</span>
-            </button>
           </div>
         </div>
       </div>
@@ -862,6 +888,7 @@ l7iaRq+zVhSu0Gg/txxohQ4=
 // App State
 const state = {
   hasCompanionServer: false,
+  isCertLoaded: false,
   parsedCert: null,
   rawCertPem: "",
   generatedCsr: null,
@@ -1004,6 +1031,26 @@ function setupTabs() {
   });
 }
 
+// Reset Certificate Import
+function resetCertImport() {
+  state.parsedCert = null;
+  state.rawCertPem = "";
+  state.generatedCsr = null;
+  state.generatedKey = null;
+  state.generatedCnf = null;
+  state.decodedCsr = null;
+  state.isCertLoaded = false;
+
+  elements.stepConfig.classList.add("hidden");
+  elements.stepOutput.classList.add("hidden");
+  elements.urlInput.value = "";
+  elements.fileInput.value = "";
+  elements.pemTextarea.value = "";
+  elements.urlErrorAlert.classList.add("hidden");
+  elements.fetchBtnText.textContent = "Fetch Certificate";
+  showToast("Reset to initial state");
+}
+
 // Parse Certificate and Transition to Step 2
 function handleCertificateLoaded(rawInput) {
   try {
@@ -1016,6 +1063,9 @@ function handleCertificateLoaded(rawInput) {
     }
 
     populateConfigurationForm(parsed);
+
+    state.isCertLoaded = true;
+    elements.fetchBtnText.textContent = "Reset";
 
     elements.stepConfig.classList.remove("hidden");
     elements.stepConfig.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1464,6 +1514,11 @@ async function copyToClipboard(text, successMsg) {
 function initEventListeners() {
   // 1. URL Fetch Form
   elements.fetchUrlBtn.addEventListener("click", async () => {
+    if (state.isCertLoaded) {
+      resetCertImport();
+      return;
+    }
+
     const url = elements.urlInput.value.trim();
     if (!url) {
       elements.urlInput.focus();
@@ -1490,7 +1545,11 @@ function initEventListeners() {
       elements.urlErrorAlert.classList.remove("hidden");
     } finally {
       elements.fetchBtnSpinner.classList.add("hidden");
-      elements.fetchBtnText.textContent = "Fetch Certificate";
+      if (state.isCertLoaded) {
+        elements.fetchBtnText.textContent = "Reset";
+      } else {
+        elements.fetchBtnText.textContent = "Fetch Certificate";
+      }
       elements.fetchUrlBtn.disabled = false;
     }
   });
