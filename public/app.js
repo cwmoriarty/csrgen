@@ -72,11 +72,10 @@ const state = {
 // DOM Elements
 const elements = {
   stepConfig: document.getElementById("stepConfig"),
-  stepOutput: document.getElementById("stepOutput"),
   toast: document.getElementById("toast"),
   toastMsg: document.getElementById("toastMsg"),
 
-  // Tabs
+  // Step 1 Tabs
   tabUrlBtn: document.getElementById("tabUrlBtn"),
   tabUploadBtn: document.getElementById("tabUploadBtn"),
   tabPasteBtn: document.getElementById("tabPasteBtn"),
@@ -85,6 +84,14 @@ const elements = {
   tabUploadPanel: document.getElementById("tabUploadPanel"),
   tabPastePanel: document.getElementById("tabPastePanel"),
   tabDemoPanel: document.getElementById("tabDemoPanel"),
+
+  // Step 2 Zippy Tabs
+  tabStep2DetailsBtn: document.getElementById("tabStep2DetailsBtn"),
+  tabStep2ExportBtn: document.getElementById("tabStep2ExportBtn"),
+  tabStep2CommandsBtn: document.getElementById("tabStep2CommandsBtn"),
+  tabStep2DetailsPanel: document.getElementById("tabStep2DetailsPanel"),
+  tabStep2ExportPanel: document.getElementById("tabStep2ExportPanel"),
+  tabStep2CommandsPanel: document.getElementById("tabStep2CommandsPanel"),
 
   // Inputs
   urlInput: document.getElementById("urlInput"),
@@ -184,16 +191,16 @@ function showToast(msg) {
 
 // Tab Switching
 function setupTabs() {
-  const tabs = [
+  const step1Tabs = [
     { btn: elements.tabUrlBtn, panel: elements.tabUrlPanel },
     { btn: elements.tabUploadBtn, panel: elements.tabUploadPanel },
     { btn: elements.tabPasteBtn, panel: elements.tabPastePanel },
     { btn: elements.tabDemoBtn, panel: elements.tabDemoPanel }
   ];
 
-  tabs.forEach(({ btn, panel }) => {
+  step1Tabs.forEach(({ btn, panel }) => {
     btn.addEventListener("click", () => {
-      tabs.forEach(t => {
+      step1Tabs.forEach(t => {
         t.btn.setAttribute("aria-selected", "false");
         t.panel.classList.remove("active");
       });
@@ -201,6 +208,32 @@ function setupTabs() {
       panel.classList.add("active");
     });
   });
+
+  const step2Tabs = [
+    { btn: elements.tabStep2DetailsBtn, panel: elements.tabStep2DetailsPanel },
+    { btn: elements.tabStep2ExportBtn, panel: elements.tabStep2ExportPanel },
+    { btn: elements.tabStep2CommandsBtn, panel: elements.tabStep2CommandsPanel }
+  ];
+
+  step2Tabs.forEach(({ btn, panel }) => {
+    btn.addEventListener("click", () => {
+      selectStep2Tab(btn, panel);
+    });
+  });
+}
+
+function selectStep2Tab(btn, panel) {
+  const step2Tabs = [
+    { btn: elements.tabStep2DetailsBtn, panel: elements.tabStep2DetailsPanel },
+    { btn: elements.tabStep2ExportBtn, panel: elements.tabStep2ExportPanel },
+    { btn: elements.tabStep2CommandsBtn, panel: elements.tabStep2CommandsPanel }
+  ];
+  step2Tabs.forEach(t => {
+    t.btn.setAttribute("aria-selected", "false");
+    t.panel.classList.remove("active");
+  });
+  btn.setAttribute("aria-selected", "true");
+  panel.classList.add("active");
 }
 
 // Reset Certificate Import
@@ -214,7 +247,7 @@ function resetCertImport() {
   state.isCertLoaded = false;
 
   elements.stepConfig.classList.add("hidden");
-  elements.stepOutput.classList.add("hidden");
+  selectStep2Tab(elements.tabStep2DetailsBtn, elements.tabStep2DetailsPanel);
   elements.urlInput.value = "";
   elements.fileInput.value = "";
   elements.pemTextarea.value = "";
@@ -239,6 +272,7 @@ function handleCertificateLoaded(rawInput) {
     state.isCertLoaded = true;
     elements.fetchBtnText.textContent = "Reset";
 
+    selectStep2Tab(elements.tabStep2DetailsBtn, elements.tabStep2DetailsPanel);
     elements.stepConfig.classList.remove("hidden");
     showToast("Certificate parsed successfully!");
   } catch (err) {
@@ -517,8 +551,7 @@ async function handleGenerateCSR() {
 
     displayGeneratedOutput(result, decoded, selectedKeyType, keyParam);
 
-    elements.stepOutput.classList.remove("hidden");
-    elements.stepOutput.scrollIntoView({ behavior: "smooth", block: "start" });
+    selectStep2Tab(elements.tabStep2ExportBtn, elements.tabStep2ExportPanel);
     showToast("CSR and Private Key generated successfully!");
   } catch (err) {
     console.error("CSR generation error", err);

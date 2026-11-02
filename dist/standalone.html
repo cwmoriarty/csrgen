@@ -439,12 +439,12 @@ pre.code-output,
       </div>
     </fieldset>
 
-    <!-- STEP 2: Parameters & Configuration -->
+    <!-- STEP 2: Parameters, Configuration & Export (Zippy) -->
     <fieldset id="stepConfig" class="hidden">
       <legend>Step 2: Inspect and Generate CSR</legend>
 
       <div class="notice-box notice-success">
-        Cloned key cipher (<span id="bannerKeyType">RSA 2048</span>), signature digest, Subject DN hierarchy, and SANs from source certificate. Status: <span id="matchBadge" style="font-weight:bold;">100% Match</span>
+        Status: <span id="matchBadge" style="font-weight:bold;">100% Match</span>. Cloned key cipher (<span id="bannerKeyType">RSA 2048</span>), signature digest, Subject DN hierarchy, and SANs from source certificate.
       </div>
 
       <!-- Generate Button above cert details, below status -->
@@ -455,245 +455,258 @@ pre.code-output,
         </button>
       </div>
 
-      <div class="step2-layout">
-        <!-- Left: Source Certificate Profile -->
-        <div class="source-box">
-          <h4>Source Certificate Profile</h4>
-          <div class="meta-row">
-            <span class="meta-label">Status:</span>
-            <span id="sourceCertStatusBadge" style="font-weight:bold;">Valid</span>
+      <!-- Step 2 Zippy Navigation -->
+      <div class="tabs-nav" role="tablist">
+        <button type="button" class="tab-btn" id="tabStep2DetailsBtn" role="tab" aria-selected="true" aria-controls="tabStep2DetailsPanel">SAN Details</button>
+        <button type="button" class="tab-btn" id="tabStep2ExportBtn" role="tab" aria-selected="false" aria-controls="tabStep2ExportPanel">Download &amp; Export</button>
+        <button type="button" class="tab-btn" id="tabStep2CommandsBtn" role="tab" aria-selected="false" aria-controls="tabStep2CommandsPanel">Commands &amp; Verification</button>
+      </div>
+
+      <!-- Page 1: SAN & Certificate Details -->
+      <div class="tab-panel active" id="tabStep2DetailsPanel" role="tabpanel">
+        <div class="step2-layout">
+          <!-- Left: Source Certificate Profile -->
+          <div class="source-box">
+            <h4>Source Certificate Profile</h4>
+            <div class="meta-row">
+              <span class="meta-label">Status:</span>
+              <span id="sourceCertStatusBadge" style="font-weight:bold;">Valid</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Key &amp; Cipher:</span><br>
+              <span id="sourceKeySpec" class="meta-val">—</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Signature Digest:</span><br>
+              <span id="sourceSigSpec" class="meta-val">—</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Common Name:</span><br>
+              <span id="sourceCN" class="meta-val">—</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Issuer:</span><br>
+              <span id="sourceIssuer" class="meta-val">—</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Validity:</span><br>
+              <span id="sourceValidity" class="meta-val">—</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Serial Number:</span><br>
+              <span id="sourceSerial" class="meta-val">—</span>
+            </div>
           </div>
-          <div class="meta-row">
-            <span class="meta-label">Key &amp; Cipher:</span><br>
-            <span id="sourceKeySpec" class="meta-val">—</span>
+
+          <!-- Right: CSR Configuration Form -->
+          <div>
+            <!-- Subject DN Form -->
+            <div class="section-sub">Subject Distinguished Name (DN)</div>
+            <table class="form-table">
+              <tr>
+                <td class="label-cell"><label for="dnCN">Common Name (CN) *:</label></td>
+                <td><input type="text" id="dnCN" style="width: 260px;" required> <small>(Required)</small></td>
+              </tr>
+              <tr>
+                <td class="label-cell"><label for="dnO">Organization (O):</label></td>
+                <td><input type="text" id="dnO" style="width: 260px;"></td>
+              </tr>
+              <tr>
+                <td class="label-cell"><label for="dnOU">Organizational Unit (OU):</label></td>
+                <td><input type="text" id="dnOU" style="width: 260px;"></td>
+              </tr>
+              <tr>
+                <td class="label-cell"><label for="dnC">Country Code (C):</label></td>
+                <td><input type="text" id="dnC" maxlength="2" style="width: 60px; text-transform:uppercase;"> <small>(2 letters, e.g. US)</small></td>
+              </tr>
+              <tr>
+                <td class="label-cell"><label for="dnST">State / Province (ST):</label></td>
+                <td><input type="text" id="dnST" style="width: 260px;"></td>
+              </tr>
+              <tr>
+                <td class="label-cell"><label for="dnL">Locality / City (L):</label></td>
+                <td><input type="text" id="dnL" style="width: 260px;"></td>
+              </tr>
+              <tr>
+                <td class="label-cell"><label for="dnStreet">Street Address:</label></td>
+                <td><input type="text" id="dnStreet" style="width: 260px;"></td>
+              </tr>
+              <tr>
+                <td class="label-cell"><label for="dnEmail">Email Address:</label></td>
+                <td><input type="text" id="dnEmail" style="width: 260px;"></td>
+              </tr>
+            </table>
+
+            <!-- SAN Editor -->
+            <div class="section-sub" style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+              <span>Subject Alternative Names (SAN)</span>
+              <button type="button" id="syncCnSanBtn">Sync CN to SAN</button>
+            </div>
+            <div id="sanListContainer" style="margin-bottom: 6px;"></div>
+            <button type="button" id="addSanBtn">+ Add SAN Entry</button>
+
+            <!-- Key & Digest Selection -->
+            <div class="section-sub" style="margin-top: 14px;">
+              Cryptographic Key Parameters &amp; Digest
+              <span id="keyMatchBadge" style="margin-left: 8px; color: var(--highlight-match);">[Exact Match]</span>
+            </div>
+            <table class="form-table">
+              <tr>
+                <td class="label-cell"><label for="keyTypeSelect">Key Algorithm &amp; Parameters:</label></td>
+                <td>
+                  <select id="keyTypeSelect">
+                    <optgroup label="RSA (Standard Legacy &amp; Enterprise)">
+                      <option value="RSA:2048">RSA 2048-bit (Standard Compatible)</option>
+                      <option value="RSA:3072">RSA 3072-bit (High Security)</option>
+                      <option value="RSA:4096">RSA 4096-bit (Maximum Security)</option>
+                    </optgroup>
+                    <optgroup label="ECDSA (Modern TLS Standard)">
+                      <option value="ECDSA:P-256">ECDSA NIST P-256 (prime256v1 / secp256r1)</option>
+                      <option value="ECDSA:P-384">ECDSA NIST P-384 (secp384r1)</option>
+                      <option value="ECDSA:P-521">ECDSA NIST P-521 (secp521r1)</option>
+                    </optgroup>
+                    <optgroup label="Edwards-Curve (High-Speed Modern)">
+                      <option value="ED25519:Ed25519">Ed25519 (RFC 8410 / WebCrypto native)</option>
+                    </optgroup>
+                    <optgroup label="Post-Quantum Cryptography (NIST FIPS 204)">
+                      <option value="MLDSA:mldsa44">ML-DSA-44 (Dilithium NIST Level 2)</option>
+                      <option value="MLDSA:mldsa65">ML-DSA-65 (Dilithium NIST Level 3)</option>
+                      <option value="MLDSA:mldsa87">ML-DSA-87 (Dilithium NIST Level 5)</option>
+                    </optgroup>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="label-cell"><label for="hashSelect">Signature Digest:</label></td>
+                <td>
+                  <select id="hashSelect">
+                    <option value="SHA-256">SHA-256 (Standard)</option>
+                    <option value="SHA-384">SHA-384</option>
+                    <option value="SHA-512">SHA-512</option>
+                    <option value="Ed25519">Pure (Ed25519 / ML-DSA internal)</option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Extensions -->
+            <div class="section-sub" style="margin-top: 14px;">Requested Extensions</div>
+            <div style="margin-bottom: 14px;">
+              <label style="font-weight:normal; margin-right: 12px;">
+                <input type="checkbox" id="checkSAN" checked> Include SAN Extension
+              </label>
+              <label style="font-weight:normal; margin-right: 12px;">
+                <input type="checkbox" id="checkKeyUsage"> Include Key Usage
+              </label>
+              <label style="font-weight:normal; margin-right: 12px;">
+                <input type="checkbox" id="checkEKU"> Include Extended Key Usage (TLS Auth)
+              </label>
+              <label style="font-weight:normal;">
+                <input type="checkbox" id="checkBasicConstraints"> Include Basic Constraints (cA=FALSE)
+              </label>
+            </div>
           </div>
-          <div class="meta-row">
-            <span class="meta-label">Signature Digest:</span><br>
-            <span id="sourceSigSpec" class="meta-val">—</span>
+        </div>
+      </div>
+
+      <!-- Page 2: Download & Export -->
+      <div class="tab-panel" id="tabStep2ExportPanel" role="tabpanel">
+        <div id="exportReadySection">
+          <div class="notice-box notice-success">
+            <b>Security Note:</b> Key pair was generated in memory. Private key never leaves this machine.
           </div>
-          <div class="meta-row">
-            <span class="meta-label">Common Name:</span><br>
-            <span id="sourceCN" class="meta-val">—</span>
+
+          <!-- CSR Block -->
+          <div style="margin-bottom: 12px;">
+            <label>Certificate Signing Request (CSR):</label>
+            <pre class="code-output" id="csrPemView"></pre>
+            <div>
+              <button type="button" id="copyCsrBtn">Copy CSR</button>
+              <button type="button" id="downloadCsrBtn">Download .csr</button>
+            </div>
           </div>
-          <div class="meta-row">
-            <span class="meta-label">Issuer:</span><br>
-            <span id="sourceIssuer" class="meta-val">—</span>
+
+          <!-- Key Block -->
+          <div style="margin-bottom: 12px;">
+            <label>Generated Private Key (PKCS#8):</label>
+            <pre class="code-output" id="keyPemView"></pre>
+            <div>
+              <button type="button" id="copyKeyBtn">Copy Key</button>
+              <button type="button" id="downloadKeyBtn">Download .key</button>
+              <button type="button" id="downloadBothBtn">Download Both (.csr + .key)</button>
+            </div>
           </div>
-          <div class="meta-row">
-            <span class="meta-label">Validity:</span><br>
-            <span id="sourceValidity" class="meta-val">—</span>
+
+          <!-- OpenSSL Configuration File -->
+          <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
+            <label>OpenSSL Configuration File (<code>request.cnf</code>):</label>
+            <pre class="code-output" id="openSslCnfView" style="max-height: 120px;"></pre>
+            <div>
+              <button type="button" id="copyCnfBtn">Copy request.cnf</button>
+              <button type="button" id="downloadCnfBtn">Download request.cnf</button>
+            </div>
           </div>
-          <div class="meta-row">
-            <span class="meta-label">Serial Number:</span><br>
-            <span id="sourceSerial" class="meta-val">—</span>
+
+          <!-- PKCS#12 Export Bundle -->
+          <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
+            <label>Export PKCS#12 (<code>.p12</code> / <code>.pfx</code>) Bundle (Windows/IIS, Azure, Tomcat):</label>
+            <table class="form-table" style="max-width: 600px; margin-top: 4px;">
+              <tr>
+                <td class="label-cell"><label for="p12Password">Bundle Password:</label></td>
+                <td><input type="text" id="p12Password" value="changeit" style="width: 140px;"> <small>(Encrypted PKCS#12 passphrase)</small></td>
+              </tr>
+              <tr>
+                <td class="label-cell"><label for="p12FriendlyName">Friendly Name / Alias:</label></td>
+                <td><input type="text" id="p12FriendlyName" style="width: 220px;" placeholder="e.g. app-cert"></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <button type="button" class="btn-primary" id="downloadP12Btn">Download .p12 / .pfx Bundle</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page 3: Automated CA Issuance Commands & Verification Table -->
+      <div class="tab-panel" id="tabStep2CommandsPanel" role="tabpanel">
+        <!-- Certbot / ACME Commands -->
+        <div style="margin-bottom: 14px;">
+          <label>Automated CA Issuance Commands (Certbot / Let's Encrypt / ACME):</label>
+          <pre class="code-output" id="certbotCmdView" style="max-height: 110px;"></pre>
+          <div>
+            <button type="button" id="copyCertbotCmdBtn">Copy Certbot Command</button>
           </div>
         </div>
 
-        <!-- Right: CSR Configuration Form -->
-        <div>
-          <!-- Subject DN Form -->
-          <div class="section-sub">Subject Distinguished Name (DN)</div>
-          <table class="form-table">
-            <tr>
-              <td class="label-cell"><label for="dnCN">Common Name (CN) *:</label></td>
-              <td><input type="text" id="dnCN" style="width: 260px;" required> <small>(Required)</small></td>
-            </tr>
-            <tr>
-              <td class="label-cell"><label for="dnO">Organization (O):</label></td>
-              <td><input type="text" id="dnO" style="width: 260px;"></td>
-            </tr>
-            <tr>
-              <td class="label-cell"><label for="dnOU">Organizational Unit (OU):</label></td>
-              <td><input type="text" id="dnOU" style="width: 260px;"></td>
-            </tr>
-            <tr>
-              <td class="label-cell"><label for="dnC">Country Code (C):</label></td>
-              <td><input type="text" id="dnC" maxlength="2" style="width: 60px; text-transform:uppercase;"> <small>(2 letters, e.g. US)</small></td>
-            </tr>
-            <tr>
-              <td class="label-cell"><label for="dnST">State / Province (ST):</label></td>
-              <td><input type="text" id="dnST" style="width: 260px;"></td>
-            </tr>
-            <tr>
-              <td class="label-cell"><label for="dnL">Locality / City (L):</label></td>
-              <td><input type="text" id="dnL" style="width: 260px;"></td>
-            </tr>
-            <tr>
-              <td class="label-cell"><label for="dnStreet">Street Address:</label></td>
-              <td><input type="text" id="dnStreet" style="width: 260px;"></td>
-            </tr>
-            <tr>
-              <td class="label-cell"><label for="dnEmail">Email Address:</label></td>
-              <td><input type="text" id="dnEmail" style="width: 260px;"></td>
-            </tr>
+        <!-- OpenSSL CLI Verification -->
+        <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
+          <label>OpenSSL CLI Verification Commands:</label>
+          <pre class="code-output" id="openSslCmdView" style="max-height: 80px;"></pre>
+          <div>
+            <button type="button" id="copyCmdBtn">Copy Verification Commands</button>
+          </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div style="border-top: 1px solid #cccccc; padding-top: 8px;">
+          <label>Snap-In Replacement Verification Table:</label>
+          <table class="data-table" id="comparisonTable" style="margin-top: 4px;">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Original Certificate</th>
+                <th>Generated CSR</th>
+                <th>Verification</th>
+              </tr>
+            </thead>
+            <tbody id="comparisonTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
           </table>
-
-          <!-- SAN Editor -->
-          <div class="section-sub" style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
-            <span>Subject Alternative Names (SAN)</span>
-            <button type="button" id="syncCnSanBtn">Sync CN to SAN</button>
-          </div>
-          <div id="sanListContainer" style="margin-bottom: 6px;"></div>
-          <button type="button" id="addSanBtn">+ Add SAN Entry</button>
-
-          <!-- Key & Digest Selection -->
-          <div class="section-sub" style="margin-top: 14px;">
-            Cryptographic Key Parameters &amp; Digest
-            <span id="keyMatchBadge" style="margin-left: 8px; color: var(--highlight-match);">[Exact Match]</span>
-          </div>
-          <table class="form-table">
-            <tr>
-              <td class="label-cell"><label for="keyTypeSelect">Key Algorithm &amp; Parameters:</label></td>
-              <td>
-                <select id="keyTypeSelect">
-                  <optgroup label="RSA (Standard Legacy &amp; Enterprise)">
-                    <option value="RSA:2048">RSA 2048-bit (Standard Compatible)</option>
-                    <option value="RSA:3072">RSA 3072-bit (High Security)</option>
-                    <option value="RSA:4096">RSA 4096-bit (Maximum Security)</option>
-                  </optgroup>
-                  <optgroup label="ECDSA (Modern TLS Standard)">
-                    <option value="ECDSA:P-256">ECDSA NIST P-256 (prime256v1 / secp256r1)</option>
-                    <option value="ECDSA:P-384">ECDSA NIST P-384 (secp384r1)</option>
-                    <option value="ECDSA:P-521">ECDSA NIST P-521 (secp521r1)</option>
-                  </optgroup>
-                  <optgroup label="Edwards-Curve (High-Speed Modern)">
-                    <option value="ED25519:Ed25519">Ed25519 (RFC 8410 / WebCrypto native)</option>
-                  </optgroup>
-                  <optgroup label="Post-Quantum Cryptography (NIST FIPS 204)">
-                    <option value="MLDSA:mldsa44">ML-DSA-44 (Dilithium NIST Level 2)</option>
-                    <option value="MLDSA:mldsa65">ML-DSA-65 (Dilithium NIST Level 3)</option>
-                    <option value="MLDSA:mldsa87">ML-DSA-87 (Dilithium NIST Level 5)</option>
-                  </optgroup>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td class="label-cell"><label for="hashSelect">Signature Digest:</label></td>
-              <td>
-                <select id="hashSelect">
-                  <option value="SHA-256">SHA-256 (Standard)</option>
-                  <option value="SHA-384">SHA-384</option>
-                  <option value="SHA-512">SHA-512</option>
-                  <option value="Ed25519">Pure (Ed25519 / ML-DSA internal)</option>
-                </select>
-              </td>
-            </tr>
-          </table>
-
-          <!-- Extensions -->
-          <div class="section-sub" style="margin-top: 14px;">Requested Extensions</div>
-          <div style="margin-bottom: 14px;">
-            <label style="font-weight:normal; margin-right: 12px;">
-              <input type="checkbox" id="checkSAN" checked> Include SAN Extension
-            </label>
-            <label style="font-weight:normal; margin-right: 12px;">
-              <input type="checkbox" id="checkKeyUsage"> Include Key Usage
-            </label>
-            <label style="font-weight:normal; margin-right: 12px;">
-              <input type="checkbox" id="checkEKU"> Include Extended Key Usage (TLS Auth)
-            </label>
-            <label style="font-weight:normal;">
-              <input type="checkbox" id="checkBasicConstraints"> Include Basic Constraints (cA=FALSE)
-            </label>
-          </div>
         </div>
-      </div>
-    </fieldset>
-
-    <!-- STEP 3: Generated Output -->
-    <fieldset id="stepOutput" class="hidden">
-      <legend>Step 3: Generated CSR, Key Pair &amp; Export Tools</legend>
-
-      <div class="notice-box notice-success">
-        <b>Security Note:</b> Key pair was generated in memory. Private key never leaves this machine.
-      </div>
-
-      <!-- CSR Block -->
-      <div style="margin-bottom: 12px;">
-        <label>Certificate Signing Request (CSR):</label>
-        <pre class="code-output" id="csrPemView"></pre>
-        <div>
-          <button type="button" id="copyCsrBtn">Copy CSR</button>
-          <button type="button" id="downloadCsrBtn">Download .csr</button>
-        </div>
-      </div>
-
-      <!-- Key Block -->
-      <div style="margin-bottom: 12px;">
-        <label>Generated Private Key (PKCS#8):</label>
-        <pre class="code-output" id="keyPemView"></pre>
-        <div>
-          <button type="button" id="copyKeyBtn">Copy Key</button>
-          <button type="button" id="downloadKeyBtn">Download .key</button>
-          <button type="button" id="downloadBothBtn">Download Both (.csr + .key)</button>
-        </div>
-      </div>
-
-      <!-- OpenSSL Configuration File -->
-      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
-        <label>OpenSSL Configuration File (<code>request.cnf</code>):</label>
-        <pre class="code-output" id="openSslCnfView" style="max-height: 120px;"></pre>
-        <div>
-          <button type="button" id="copyCnfBtn">Copy request.cnf</button>
-          <button type="button" id="downloadCnfBtn">Download request.cnf</button>
-        </div>
-      </div>
-
-      <!-- PKCS#12 Export Bundle -->
-      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
-        <label>Export PKCS#12 (<code>.p12</code> / <code>.pfx</code>) Bundle (Windows/IIS, Azure, Tomcat):</label>
-        <table class="form-table" style="max-width: 600px; margin-top: 4px;">
-          <tr>
-            <td class="label-cell"><label for="p12Password">Bundle Password:</label></td>
-            <td><input type="text" id="p12Password" value="changeit" style="width: 140px;"> <small>(Encrypted PKCS#12 passphrase)</small></td>
-          </tr>
-          <tr>
-            <td class="label-cell"><label for="p12FriendlyName">Friendly Name / Alias:</label></td>
-            <td><input type="text" id="p12FriendlyName" style="width: 220px;" placeholder="e.g. app-cert"></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              <button type="button" class="btn-primary" id="downloadP12Btn">Download .p12 / .pfx Bundle</button>
-            </td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- Certbot / ACME Commands -->
-      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
-        <label>Automated CA Issuance Commands (Certbot / Let's Encrypt / ACME):</label>
-        <pre class="code-output" id="certbotCmdView" style="max-height: 110px;"></pre>
-        <div>
-          <button type="button" id="copyCertbotCmdBtn">Copy Certbot Command</button>
-        </div>
-      </div>
-
-      <!-- OpenSSL CLI Verification -->
-      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
-        <label>OpenSSL CLI Verification Commands:</label>
-        <pre class="code-output" id="openSslCmdView" style="max-height: 80px;"></pre>
-        <div>
-          <button type="button" id="copyCmdBtn">Copy Verification Commands</button>
-        </div>
-      </div>
-
-      <!-- Comparison Table -->
-      <div style="border-top: 1px solid #cccccc; padding-top: 8px;">
-        <label>Snap-In Replacement Verification Table:</label>
-        <table class="data-table" id="comparisonTable" style="margin-top: 4px;">
-          <thead>
-            <tr>
-              <th>Parameter</th>
-              <th>Original Certificate</th>
-              <th>Generated CSR</th>
-              <th>Verification</th>
-            </tr>
-          </thead>
-          <tbody id="comparisonTableBody">
-            <!-- Dynamically populated -->
-          </tbody>
-        </table>
       </div>
     </fieldset>
   </div>
@@ -927,11 +940,10 @@ const state = {
 // DOM Elements
 const elements = {
   stepConfig: document.getElementById("stepConfig"),
-  stepOutput: document.getElementById("stepOutput"),
   toast: document.getElementById("toast"),
   toastMsg: document.getElementById("toastMsg"),
 
-  // Tabs
+  // Step 1 Tabs
   tabUrlBtn: document.getElementById("tabUrlBtn"),
   tabUploadBtn: document.getElementById("tabUploadBtn"),
   tabPasteBtn: document.getElementById("tabPasteBtn"),
@@ -940,6 +952,14 @@ const elements = {
   tabUploadPanel: document.getElementById("tabUploadPanel"),
   tabPastePanel: document.getElementById("tabPastePanel"),
   tabDemoPanel: document.getElementById("tabDemoPanel"),
+
+  // Step 2 Zippy Tabs
+  tabStep2DetailsBtn: document.getElementById("tabStep2DetailsBtn"),
+  tabStep2ExportBtn: document.getElementById("tabStep2ExportBtn"),
+  tabStep2CommandsBtn: document.getElementById("tabStep2CommandsBtn"),
+  tabStep2DetailsPanel: document.getElementById("tabStep2DetailsPanel"),
+  tabStep2ExportPanel: document.getElementById("tabStep2ExportPanel"),
+  tabStep2CommandsPanel: document.getElementById("tabStep2CommandsPanel"),
 
   // Inputs
   urlInput: document.getElementById("urlInput"),
@@ -1039,16 +1059,16 @@ function showToast(msg) {
 
 // Tab Switching
 function setupTabs() {
-  const tabs = [
+  const step1Tabs = [
     { btn: elements.tabUrlBtn, panel: elements.tabUrlPanel },
     { btn: elements.tabUploadBtn, panel: elements.tabUploadPanel },
     { btn: elements.tabPasteBtn, panel: elements.tabPastePanel },
     { btn: elements.tabDemoBtn, panel: elements.tabDemoPanel }
   ];
 
-  tabs.forEach(({ btn, panel }) => {
+  step1Tabs.forEach(({ btn, panel }) => {
     btn.addEventListener("click", () => {
-      tabs.forEach(t => {
+      step1Tabs.forEach(t => {
         t.btn.setAttribute("aria-selected", "false");
         t.panel.classList.remove("active");
       });
@@ -1056,6 +1076,32 @@ function setupTabs() {
       panel.classList.add("active");
     });
   });
+
+  const step2Tabs = [
+    { btn: elements.tabStep2DetailsBtn, panel: elements.tabStep2DetailsPanel },
+    { btn: elements.tabStep2ExportBtn, panel: elements.tabStep2ExportPanel },
+    { btn: elements.tabStep2CommandsBtn, panel: elements.tabStep2CommandsPanel }
+  ];
+
+  step2Tabs.forEach(({ btn, panel }) => {
+    btn.addEventListener("click", () => {
+      selectStep2Tab(btn, panel);
+    });
+  });
+}
+
+function selectStep2Tab(btn, panel) {
+  const step2Tabs = [
+    { btn: elements.tabStep2DetailsBtn, panel: elements.tabStep2DetailsPanel },
+    { btn: elements.tabStep2ExportBtn, panel: elements.tabStep2ExportPanel },
+    { btn: elements.tabStep2CommandsBtn, panel: elements.tabStep2CommandsPanel }
+  ];
+  step2Tabs.forEach(t => {
+    t.btn.setAttribute("aria-selected", "false");
+    t.panel.classList.remove("active");
+  });
+  btn.setAttribute("aria-selected", "true");
+  panel.classList.add("active");
 }
 
 // Reset Certificate Import
@@ -1069,7 +1115,7 @@ function resetCertImport() {
   state.isCertLoaded = false;
 
   elements.stepConfig.classList.add("hidden");
-  elements.stepOutput.classList.add("hidden");
+  selectStep2Tab(elements.tabStep2DetailsBtn, elements.tabStep2DetailsPanel);
   elements.urlInput.value = "";
   elements.fileInput.value = "";
   elements.pemTextarea.value = "";
@@ -1094,6 +1140,7 @@ function handleCertificateLoaded(rawInput) {
     state.isCertLoaded = true;
     elements.fetchBtnText.textContent = "Reset";
 
+    selectStep2Tab(elements.tabStep2DetailsBtn, elements.tabStep2DetailsPanel);
     elements.stepConfig.classList.remove("hidden");
     showToast("Certificate parsed successfully!");
   } catch (err) {
@@ -1372,8 +1419,7 @@ async function handleGenerateCSR() {
 
     displayGeneratedOutput(result, decoded, selectedKeyType, keyParam);
 
-    elements.stepOutput.classList.remove("hidden");
-    elements.stepOutput.scrollIntoView({ behavior: "smooth", block: "start" });
+    selectStep2Tab(elements.tabStep2ExportBtn, elements.tabStep2ExportPanel);
     showToast("CSR and Private Key generated successfully!");
   } catch (err) {
     console.error("CSR generation error", err);
