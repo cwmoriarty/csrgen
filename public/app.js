@@ -164,14 +164,18 @@ async function checkServerStatus() {
       const data = await res.json();
       if (data.status === "ok") {
         state.hasCompanionServer = true;
-        elements.companionText.textContent = "[Server Mode: Active - Live HTTPS inspection, P12 export & PQC ready]";
+        if (elements.companionText) {
+          elements.companionText.textContent = "[Server Mode: Active - Live HTTPS inspection, P12 export & PQC ready]";
+        }
         return;
       }
     }
   } catch (e) {}
 
   state.hasCompanionServer = false;
-  elements.companionText.textContent = "[Browser Standalone Mode: File upload, paste, Ed25519 & samples active]";
+  if (elements.companionText) {
+    elements.companionText.textContent = "[Browser Standalone Mode: File upload, paste, Ed25519 & samples active]";
+  }
 }
 
 // Toast helper
