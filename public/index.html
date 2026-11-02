@@ -4,52 +4,24 @@
   <meta charset="UTF-8">
   <title>CSRGen</title>
   <style>
-/* Simple Web 1.0 Style Sheet */
+/* cwmoriarty.com aesthetic for CSRGen */
 :root {
-  color-scheme: light dark;
-
-  /* Classic Web 1.0 Light Colors */
-  --bg-page: #f0f0f0;
-  --bg-container: #ffffff;
-  --bg-panel: #f7f7f7;
-  --bg-input: #ffffff;
-  --bg-pre: #f4f4f4;
-  --text-main: #000000;
-  --text-muted: #444444;
-  --text-link: #0000cc;
-  --text-header: #000080;
-  --border-dark: #808080;
+  --font-main: Helvetica, Geneva, Arial, sans-serif;
+  --font-mono: monospace;
+  --color-bg: #ffffff;
+  --color-text: #000000;
+  --color-border: #000000;
+  --color-btn-bg: #f2f2f2;
+  --color-btn-hover: #000000;
+  --color-term-bg: #000000;
+  --color-term-text: lime; /* #00ff00 like cwmoriarty.com/ssl.html */
+  --border-dark: #000000;
   --border-light: #cccccc;
-  --border-fieldset: #7f9db9;
-  --btn-bg: #e4e4e4;
-  --btn-border-light: #ffffff;
-  --btn-border-dark: #666666;
-  --highlight-match: #006600;
-  --highlight-warn: #995500;
-  --highlight-err: #aa0000;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-page: #121212;
-    --bg-container: #1c1c1c;
-    --bg-panel: #242424;
-    --bg-input: #111111;
-    --bg-pre: #161616;
-    --text-main: #e0e0e0;
-    --text-muted: #aaaaaa;
-    --text-link: #6699ff;
-    --text-header: #88bbff;
-    --border-dark: #555555;
-    --border-light: #333333;
-    --border-fieldset: #445566;
-    --btn-bg: #2d2d2d;
-    --btn-border-light: #555555;
-    --btn-border-dark: #111111;
-    --highlight-match: #44bb44;
-    --highlight-warn: #ddaa33;
-    --highlight-err: #ff5555;
-  }
+  --bg-panel: #fafafa;
+  --text-link: #000000;
+  --highlight-match: #008800;
+  --highlight-warn: #bb6600;
+  --highlight-err: #cc0000;
 }
 
 * {
@@ -58,185 +30,199 @@
 
 body {
   margin: 0;
-  padding: 12px;
-  background-color: var(--bg-page);
-  color: var(--text-main);
-  font-family: -apple-system, "Segoe UI", Arial, Helvetica, sans-serif;
-  font-size: 13px;
-  line-height: 1.4;
+  padding: 16px;
+  background-color: #ffffff;
+  color: var(--color-text);
+  font-family: var(--font-main);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+a {
+  color: #000000;
+  text-decoration: underline;
+}
+
+a:hover {
+  background-color: #000000;
+  color: #ffffff;
+  text-decoration: none;
 }
 
 .container {
-  max-width: 960px;
-  margin: 0 auto;
-  background-color: var(--bg-container);
-  border: 1px solid var(--border-dark);
-  padding: 16px 20px 24px;
+  max-width: 880px;
+  margin: 10px auto 50px auto;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  padding: 24px 28px;
 }
 
 /* Header */
 .app-header {
-  border-bottom: 2px solid var(--text-header);
-  padding-bottom: 10px;
-  margin-bottom: 14px;
+  border-bottom: 2px solid #000000;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 h1 {
-  font-size: 20px;
+  font-size: 28px;
   font-weight: bold;
-  color: var(--text-header);
-  margin: 0 0 4px 0;
-  font-family: inherit;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
 }
 
 .app-subtitle {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #333333;
+  margin-bottom: 8px;
 }
 
 .status-bar {
-  font-size: 11px;
-  font-family: monospace;
-  background: var(--bg-panel);
-  border: 1px solid var(--border-light);
-  padding: 3px 8px;
   display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: #f0f0f0;
+  border: 1px solid #000000;
+  padding: 2px 6px;
   margin-top: 4px;
 }
 
-/* Fieldsets & Legends (Web 1.0 staple) */
+/* Fieldset & Legend */
 fieldset {
-  border: 1px solid var(--border-fieldset);
+  border: 1px solid var(--color-border);
   margin: 0 0 16px 0;
-  padding: 10px 14px 14px;
-  background: var(--bg-container);
+  padding: 12px 16px 16px;
+  background-color: #ffffff;
 }
 
 legend {
-  font-size: 13px;
   font-weight: bold;
-  color: var(--text-header);
+  font-size: 14px;
   padding: 0 6px;
+  color: #000000;
 }
 
 .section-desc {
   font-size: 12px;
-  color: var(--text-muted);
+  color: #444444;
   margin-bottom: 10px;
 }
 
-/* Classic Tabs (Folder Property Sheet Style) */
+/* Tabs */
 .tabs-nav {
   display: flex;
-  gap: 2px;
-  border-bottom: 1px solid var(--border-dark);
+  gap: 3px;
+  border-bottom: 1px solid #000000;
   margin-bottom: 12px;
 }
 
 .tab-btn {
-  background: var(--btn-bg);
-  color: var(--text-main);
-  border: 1px solid var(--border-dark);
+  background: var(--color-btn-bg);
+  color: #000000;
+  border: 1px solid #000000;
   border-bottom: none;
-  padding: 5px 12px;
+  padding: 4px 12px;
   font-size: 12px;
-  font-weight: normal;
+  font-family: var(--font-main);
   cursor: pointer;
   margin-bottom: -1px;
-  border-radius: 0;
 }
 
 .tab-btn:hover {
-  background: #d8d8d8;
+  background: #000000;
+  color: #ffffff;
 }
 
 .tab-btn[aria-selected="true"] {
-  background: var(--bg-container);
+  background: #ffffff;
+  color: #000000;
   font-weight: bold;
-  border-bottom: 1px solid var(--bg-container);
-  color: var(--text-header);
+  border-bottom: 1px solid #ffffff;
 }
 
 .tab-panel {
   display: none;
-  padding: 8px 0;
+  padding: 6px 0;
 }
 
 .tab-panel.active {
   display: block;
 }
 
-/* Form Controls */
+/* Inputs & Form Elements */
 label {
   font-weight: bold;
-  font-size: 12px;
+  font-size: 13px;
   display: inline-block;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 input[type="text"],
 input[type="url"],
 select,
 textarea {
-  font-family: inherit;
-  font-size: 12px;
-  padding: 3px 5px;
-  border: 1px solid var(--border-dark);
-  background-color: var(--bg-input);
-  color: var(--text-main);
-  border-radius: 0;
+  font-family: var(--font-main);
+  font-size: 13px;
+  padding: 4px 6px;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
 }
 
 input[type="text"]:focus,
 input[type="url"]:focus,
 select:focus,
 textarea:focus {
-  outline: 1px dotted #000080;
+  outline: 2px solid #000000;
 }
 
-/* Validation via guidance */
+/* Validation */
 input:not([type="checkbox"]):not([type="radio"]):user-invalid,
 textarea:user-invalid {
-  border-color: var(--highlight-err);
+  border-color: #cc0000;
   background-color: #fff0f0;
 }
 
-input:not([type="checkbox"]):not([type="radio"]):user-valid {
-  border-color: var(--border-dark);
-}
-
 textarea {
-  font-family: "Courier New", Courier, monospace;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: 12px;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Classic Beveled Buttons */
+/* Buttons */
 button,
 input[type="button"],
 input[type="submit"] {
-  font-family: inherit;
+  font-family: var(--font-main);
   font-size: 12px;
-  padding: 3px 10px;
-  background-color: var(--btn-bg);
-  color: var(--text-main);
-  border: 2px outset var(--btn-border-light);
-  border-radius: 0;
+  padding: 4px 10px;
+  background-color: var(--color-btn-bg);
+  color: #000000;
+  border: 1px solid #000000;
   cursor: pointer;
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+  background-color: #000000;
+  color: #ffffff;
 }
 
 button:active,
 input[type="button"]:active,
 input[type="submit"]:active {
-  border-style: inset;
+  background-color: #333333;
+  color: #ffffff;
 }
 
 button:disabled,
 input[type="button"]:disabled {
-  opacity: 0.6;
+  opacity: 0.4;
   cursor: not-allowed;
+  background-color: #f2f2f2;
+  color: #888888;
 }
 
 .btn-primary {
@@ -244,35 +230,43 @@ input[type="button"]:disabled {
 }
 
 .btn-hero {
-  padding: 6px 16px;
-  font-size: 13px;
+  padding: 8px 18px;
+  font-size: 14px;
   font-weight: bold;
+  border: 2px solid #000000;
+  background-color: #f2f2f2;
+  color: #000000;
 }
 
-/* Custom file selector button styled simply per web guidance */
+.btn-hero:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* File Selector */
 input[type="file"]::file-selector-button {
-  font-family: inherit;
+  font-family: var(--font-main);
   font-size: 12px;
-  padding: 2px 8px;
-  background-color: var(--btn-bg);
-  color: var(--text-main);
-  border: 2px outset var(--btn-border-light);
-  border-radius: 0;
+  padding: 3px 8px;
+  background-color: var(--color-btn-bg);
+  color: #000000;
+  border: 1px solid #000000;
   cursor: pointer;
   margin-right: 8px;
 }
 
-input[type="file"]::file-selector-button:active {
-  border-style: inset;
+input[type="file"]::file-selector-button:hover {
+  background-color: #000000;
+  color: #ffffff;
 }
 
-/* Classic HTML Tables */
+/* Tables */
 table.form-table,
 table.data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
-  margin-bottom: 10px;
+  font-size: 13px;
+  margin-bottom: 8px;
 }
 
 table.form-table td {
@@ -281,7 +275,7 @@ table.form-table td {
 }
 
 table.form-table td.label-cell {
-  width: 180px;
+  width: 170px;
   font-weight: bold;
   text-align: right;
   padding-right: 10px;
@@ -289,40 +283,40 @@ table.form-table td.label-cell {
 }
 
 table.data-table {
-  border: 1px solid var(--border-dark);
+  border: 1px solid #000000;
 }
 
 table.data-table th {
-  background-color: var(--btn-bg);
-  border: 1px solid var(--border-dark);
-  padding: 4px 8px;
+  background-color: #f0f0f0;
+  border: 1px solid #000000;
+  padding: 5px 8px;
   text-align: left;
   font-weight: bold;
 }
 
 table.data-table td {
-  border: 1px solid var(--border-light);
-  padding: 4px 8px;
+  border: 1px solid #000000;
+  padding: 5px 8px;
 }
 
 .match-exact {
-  color: var(--highlight-match);
   font-weight: bold;
+  color: var(--highlight-match);
 }
 
 .match-diff {
-  color: var(--highlight-warn);
   font-weight: bold;
+  color: var(--highlight-warn);
 }
 
-/* Split Layout for Step 2 */
+/* Step 2 Split Layout */
 .step2-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 14px;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .step2-layout {
     grid-template-columns: 1fr;
   }
@@ -330,30 +324,29 @@ table.data-table td {
 
 .source-box {
   background: var(--bg-panel);
-  border: 1px solid var(--border-dark);
-  padding: 10px;
+  border: 1px solid #000000;
+  padding: 10px 12px;
 }
 
 .source-box h4 {
   margin: 0 0 8px 0;
-  font-size: 12px;
-  border-bottom: 1px solid var(--border-dark);
-  padding-bottom: 3px;
-  color: var(--text-header);
+  font-size: 13px;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 4px;
 }
 
 .meta-row {
   margin-bottom: 6px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .meta-label {
   font-weight: bold;
-  color: var(--text-muted);
 }
 
 .meta-val {
-  font-family: monospace;
+  font-family: var(--font-mono);
+  font-size: 11px;
   word-break: break-all;
 }
 
@@ -373,54 +366,65 @@ table.data-table td {
   flex: 1;
 }
 
-/* Notice & Banner Boxes */
+/* Notice Box */
 .notice-box {
-  border: 1px solid var(--border-dark);
-  background-color: var(--bg-panel);
+  border: 1px solid #000000;
+  background-color: #fafafa;
   padding: 6px 10px;
   font-size: 12px;
   margin-bottom: 12px;
 }
 
 .notice-success {
-  border-color: var(--highlight-match);
-  background-color: #f0fff0;
-  color: #004400;
-}
-
-@media (prefers-color-scheme: dark) {
-  .notice-success {
-    background-color: #112211;
-    color: #88ff88;
-  }
+  border: 1px solid #000000;
+  background-color: #f4faf4;
 }
 
 .notice-error {
-  border-color: var(--highlight-err);
+  border: 1px solid #cc0000;
   background-color: #fff0f0;
   color: #990000;
 }
 
-@media (prefers-color-scheme: dark) {
-  .notice-error {
-    background-color: #2a1111;
-    color: #ff8888;
-  }
-}
-
-/* Monospace Output Pre Blocks */
-pre.code-output {
+/* Retro Monospace Output (Matching cwmoriarty.com/ssl.html .output) */
+pre.code-output,
+.output {
   margin: 4px 0 8px 0;
-  padding: 8px;
-  background-color: var(--bg-pre);
-  border: 1px solid var(--border-dark);
-  font-family: "Courier New", Courier, monospace;
+  padding: 8px 10px;
+  background-color: var(--color-term-bg);
+  color: var(--color-term-text);
+  border: 1px solid #000000;
+  font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1.35;
   white-space: pre;
   overflow-x: auto;
-  max-height: 180px;
+  max-height: 190px;
   user-select: text;
+}
+
+/* Bottom Left Link Widget (Matching cwmoriarty.com .libleft) */
+.libleft {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  font-size: 11px;
+  font-family: var(--font-main);
+  background: #ffffff;
+  padding: 3px 6px;
+  border: 1px solid #000000;
+  z-index: 999;
+}
+
+.libleft a {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.libleft a:hover {
+  background-color: #000000;
+  color: #ffffff;
+  text-decoration: none;
 }
 
 /* Toast */
@@ -428,14 +432,14 @@ pre.code-output {
   position: fixed;
   bottom: 12px;
   right: 12px;
-  background-color: #ffffcc;
-  color: #000000;
-  border: 1px solid #808080;
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
   padding: 4px 10px;
   font-size: 12px;
-  font-family: sans-serif;
+  font-family: var(--font-main);
   display: none;
-  box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+  z-index: 1000;
 }
 
 .toast.show {
@@ -467,7 +471,7 @@ pre.code-output {
           <span id="companionText">Checking environment mode...</span>
         </div>
         <div>
-          <a href="index.html" download="csrgen.html" style="font-size: 11px; font-weight: bold; color: var(--text-link); text-decoration: underline;">
+          <a href="index.html" download="csrgen.html" style="font-size: 11px; font-weight: bold; color: #000000; text-decoration: underline;">
             [⬇️ Download Standalone Single-File HTML (Air-Gapped)]
           </a>
         </div>
@@ -818,6 +822,11 @@ pre.code-output {
   <!-- Toast -->
   <div id="toast" class="toast">
     <span id="toastMsg">Copied!</span>
+  </div>
+
+  <!-- Bottom Left Link Widget (Matching cwmoriarty.com) -->
+  <div class="libleft">
+    <small><a href="https://cwmoriarty.com">cwmoriarty.com</a> &middot; <a href="https://github.com/cwmoriarty/csrgen">github</a></small>
   </div>
 
   <!-- Scripts -->
