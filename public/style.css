@@ -1,0 +1,447 @@
+/* Simple Web 1.0 Style Sheet */
+:root {
+  color-scheme: light dark;
+
+  /* Classic Web 1.0 Light Colors */
+  --bg-page: #f0f0f0;
+  --bg-container: #ffffff;
+  --bg-panel: #f7f7f7;
+  --bg-input: #ffffff;
+  --bg-pre: #f4f4f4;
+  --text-main: #000000;
+  --text-muted: #444444;
+  --text-link: #0000cc;
+  --text-header: #000080;
+  --border-dark: #808080;
+  --border-light: #cccccc;
+  --border-fieldset: #7f9db9;
+  --btn-bg: #e4e4e4;
+  --btn-border-light: #ffffff;
+  --btn-border-dark: #666666;
+  --highlight-match: #006600;
+  --highlight-warn: #995500;
+  --highlight-err: #aa0000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page: #121212;
+    --bg-container: #1c1c1c;
+    --bg-panel: #242424;
+    --bg-input: #111111;
+    --bg-pre: #161616;
+    --text-main: #e0e0e0;
+    --text-muted: #aaaaaa;
+    --text-link: #6699ff;
+    --text-header: #88bbff;
+    --border-dark: #555555;
+    --border-light: #333333;
+    --border-fieldset: #445566;
+    --btn-bg: #2d2d2d;
+    --btn-border-light: #555555;
+    --btn-border-dark: #111111;
+    --highlight-match: #44bb44;
+    --highlight-warn: #ddaa33;
+    --highlight-err: #ff5555;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 12px;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: -apple-system, "Segoe UI", Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  background-color: var(--bg-container);
+  border: 1px solid var(--border-dark);
+  padding: 16px 20px 24px;
+}
+
+/* Header */
+.app-header {
+  border-bottom: 2px solid var(--text-header);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text-header);
+  margin: 0 0 4px 0;
+  font-family: inherit;
+}
+
+.app-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 8px 0;
+}
+
+.status-bar {
+  font-size: 11px;
+  font-family: monospace;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-light);
+  padding: 3px 8px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* Fieldsets & Legends (Web 1.0 staple) */
+fieldset {
+  border: 1px solid var(--border-fieldset);
+  margin: 0 0 16px 0;
+  padding: 10px 14px 14px;
+  background: var(--bg-container);
+}
+
+legend {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text-header);
+  padding: 0 6px;
+}
+
+.section-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* Classic Tabs (Folder Property Sheet Style) */
+.tabs-nav {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border-dark);
+  margin-bottom: 12px;
+}
+
+.tab-btn {
+  background: var(--btn-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-dark);
+  border-bottom: none;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: normal;
+  cursor: pointer;
+  margin-bottom: -1px;
+  border-radius: 0;
+}
+
+.tab-btn:hover {
+  background: #d8d8d8;
+}
+
+.tab-btn[aria-selected="true"] {
+  background: var(--bg-container);
+  font-weight: bold;
+  border-bottom: 1px solid var(--bg-container);
+  color: var(--text-header);
+}
+
+.tab-panel {
+  display: none;
+  padding: 8px 0;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* Form Controls */
+label {
+  font-weight: bold;
+  font-size: 12px;
+  display: inline-block;
+  margin-bottom: 3px;
+}
+
+input[type="text"],
+input[type="url"],
+select,
+textarea {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 3px 5px;
+  border: 1px solid var(--border-dark);
+  background-color: var(--bg-input);
+  color: var(--text-main);
+  border-radius: 0;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus,
+select:focus,
+textarea:focus {
+  outline: 1px dotted #000080;
+}
+
+/* Validation via guidance */
+input:not([type="checkbox"]):not([type="radio"]):user-invalid,
+textarea:user-invalid {
+  border-color: var(--highlight-err);
+  background-color: #fff0f0;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):user-valid {
+  border-color: var(--border-dark);
+}
+
+textarea {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Classic Beveled Buttons */
+button,
+input[type="button"],
+input[type="submit"] {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 3px 10px;
+  background-color: var(--btn-bg);
+  color: var(--text-main);
+  border: 2px outset var(--btn-border-light);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+button:active,
+input[type="button"]:active,
+input[type="submit"]:active {
+  border-style: inset;
+}
+
+button:disabled,
+input[type="button"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  font-weight: bold;
+}
+
+.btn-hero {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* Custom file selector button styled simply per web guidance */
+input[type="file"]::file-selector-button {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 2px 8px;
+  background-color: var(--btn-bg);
+  color: var(--text-main);
+  border: 2px outset var(--btn-border-light);
+  border-radius: 0;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+input[type="file"]::file-selector-button:active {
+  border-style: inset;
+}
+
+/* Classic HTML Tables */
+table.form-table,
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+table.form-table td {
+  padding: 4px 6px;
+  vertical-align: middle;
+}
+
+table.form-table td.label-cell {
+  width: 180px;
+  font-weight: bold;
+  text-align: right;
+  padding-right: 10px;
+  white-space: nowrap;
+}
+
+table.data-table {
+  border: 1px solid var(--border-dark);
+}
+
+table.data-table th {
+  background-color: var(--btn-bg);
+  border: 1px solid var(--border-dark);
+  padding: 4px 8px;
+  text-align: left;
+  font-weight: bold;
+}
+
+table.data-table td {
+  border: 1px solid var(--border-light);
+  padding: 4px 8px;
+}
+
+.match-exact {
+  color: var(--highlight-match);
+  font-weight: bold;
+}
+
+.match-diff {
+  color: var(--highlight-warn);
+  font-weight: bold;
+}
+
+/* Split Layout for Step 2 */
+.step2-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 760px) {
+  .step2-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.source-box {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dark);
+  padding: 10px;
+}
+
+.source-box h4 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-dark);
+  padding-bottom: 3px;
+  color: var(--text-header);
+}
+
+.meta-row {
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+
+.meta-label {
+  font-weight: bold;
+  color: var(--text-muted);
+}
+
+.meta-val {
+  font-family: monospace;
+  word-break: break-all;
+}
+
+/* SAN Rows */
+.san-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.san-row select {
+  width: 100px;
+}
+
+.san-row input {
+  flex: 1;
+}
+
+/* Notice & Banner Boxes */
+.notice-box {
+  border: 1px solid var(--border-dark);
+  background-color: var(--bg-panel);
+  padding: 6px 10px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.notice-success {
+  border-color: var(--highlight-match);
+  background-color: #f0fff0;
+  color: #004400;
+}
+
+@media (prefers-color-scheme: dark) {
+  .notice-success {
+    background-color: #112211;
+    color: #88ff88;
+  }
+}
+
+.notice-error {
+  border-color: var(--highlight-err);
+  background-color: #fff0f0;
+  color: #990000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .notice-error {
+    background-color: #2a1111;
+    color: #ff8888;
+  }
+}
+
+/* Monospace Output Pre Blocks */
+pre.code-output {
+  margin: 4px 0 8px 0;
+  padding: 8px;
+  background-color: var(--bg-pre);
+  border: 1px solid var(--border-dark);
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  white-space: pre;
+  overflow-x: auto;
+  max-height: 180px;
+  user-select: text;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  background-color: #ffffcc;
+  color: #000000;
+  border: 1px solid #808080;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: sans-serif;
+  display: none;
+  box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+}
+
+.toast.show {
+  display: block;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.spinner {
+  display: inline-block;
+  font-style: italic;
+  font-size: 11px;
+}

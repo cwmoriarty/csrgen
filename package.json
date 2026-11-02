@@ -1,0 +1,37 @@
+{
+  "name": "csrgen",
+  "version": "1.0.0",
+  "description": "CSRGen — Self-contained HTML form and PKI application that generates matching Certificate Signing Requests (CSRs) and key pairs.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build:bundle": "esbuild src/index.js --bundle --minify --format=iife --global-name=SnapInModule --outfile=public/snap-in-bundle.js",
+    "build:single-file": "node scripts/build-single-file.js",
+    "build": "npm run build:bundle && npm run build:single-file",
+    "test": "node -e \"require('./public/snap-in-bundle.js'); console.log('Bundle loads successfully!');\""
+  },
+  "keywords": [
+    "csrgen",
+    "pki",
+    "x509",
+    "csr",
+    "pkcs10",
+    "pkcs12",
+    "p12",
+    "ed25519",
+    "mldsa",
+    "pqc",
+    "tls"
+  ],
+  "author": "Chris Moriarty",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "asn1js": "^4.0.0",
+    "node-forge": "^1.4.2",
+    "pkijs": "^4.0.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}
