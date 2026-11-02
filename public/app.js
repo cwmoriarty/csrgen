@@ -137,9 +137,6 @@ const elements = {
   checkKeyUsage: document.getElementById("checkKeyUsage"),
   checkEKU: document.getElementById("checkEKU"),
   checkBasicConstraints: document.getElementById("checkBasicConstraints"),
-  generateCsrBtn: document.getElementById("generateCsrBtn"),
-  genBtnSpinner: document.getElementById("genBtnSpinner"),
-  genBtnText: document.getElementById("genBtnText"),
 
   // Output View
   csrPemView: document.getElementById("csrPemView"),
@@ -257,7 +254,7 @@ function resetCertImport() {
 }
 
 // Parse Certificate and Transition to Step 2
-function handleCertificateLoaded(rawInput) {
+async function handleCertificateLoaded(rawInput) {
   try {
     const parsed = window.SnapInPKI.parseCertificate(rawInput);
     state.parsedCert = parsed;
@@ -274,7 +271,11 @@ function handleCertificateLoaded(rawInput) {
 
     selectStep2Tab(elements.tabStep2DetailsBtn, elements.tabStep2DetailsPanel);
     elements.stepConfig.classList.remove("hidden");
-    showToast("Certificate parsed successfully!");
+
+    // Automatically generate matching CSR and key pair
+    await handleGenerateCSR();
+
+    showToast("Certificate imported & matching CSR generated!");
   } catch (err) {
     console.error(err);
     alert("Error parsing certificate: " + err.message);
@@ -402,10 +403,17 @@ function addSanRow(type = "dns", value = "") {
   row.querySelector(".btn-del-san").addEventListener("click", () => {
     row.remove();
     updateCompatibilityStatus();
+    debounceGenerateCSR(200);
   });
 
-  row.querySelector(".san-value-input").addEventListener("input", updateCompatibilityStatus);
-  row.querySelector(".san-type-select").addEventListener("change", updateCompatibilityStatus);
+  row.querySelector(".san-value-input").addEventListener("input", () => {
+    updateCompatibilityStatus();
+    debounceGenerateCSR(300);
+  });
+  row.querySelector(".san-type-select").addEventListener("change", () => {
+    updateCompatibilityStatus();
+    debounceGenerateCSR(100);
+  });
 
   elements.sanListContainer.appendChild(row);
 }
@@ -437,11 +445,19 @@ function updateCompatibilityStatus() {
   }
 }
 
-// Generate Snap-In CSR
-async function handleGenerateCSR() {
-  if (!elements.dnCN.value.trim()) {
-    alert("Common Name (CN) is required to generate a certificate request.");
-    elements.dnCN.focus();
+// Automatic CSR & Key Generation
+let debounceTimer = null;
+function debounceGenerateCSR(delay = 300) {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    if (state.parsedCert && elements.dnCN && elements.dnCN.value.trim()) {
+      handleGenerateCSR(false);
+    }
+  }, delay);
+}
+
+async function handleGenerateCSR(switchTab = false) {
+  if (!elements.dnCN || !elements.dnCN.value.trim()) {
     return;
   }
 
@@ -484,10 +500,6 @@ async function handleGenerateCSR() {
     ekus.push("1.3.6.1.5.5.7.3.1"); // serverAuth
     ekus.push("1.3.6.1.5.5.7.3.2"); // clientAuth
   }
-
-  elements.genBtnSpinner.classList.remove("hidden");
-  elements.genBtnText.textContent = "Generating Cryptographic Key Pair...";
-  elements.generateCsrBtn.disabled = true;
 
   try {
     let result;
@@ -551,17 +563,14 @@ async function handleGenerateCSR() {
 
     displayGeneratedOutput(result, decoded, selectedKeyType, keyParam);
 
-    selectStep2Tab(elements.tabStep2ExportBtn, elements.tabStep2ExportPanel);
-    showToast("CSR and Private Key generated successfully!");
+    if (switchTab) {
+      selectStep2Tab(elements.tabStep2ExportBtn, elements.tabStep2ExportPanel);
+    }
   } catch (err) {
     console.error("CSR generation error", err);
     if (!err.message.includes("PQC server required")) {
       alert("CSR Generation Failed: " + err.message);
     }
-  } finally {
-    elements.genBtnSpinner.classList.add("hidden");
-    elements.genBtnText.textContent = "Generate CSR and Private Key";
-    elements.generateCsrBtn.disabled = false;
   }
 }
 
@@ -696,7 +705,7 @@ function downloadFile(content, filename, type = "text/plain") {
 }
 
 // Copy to Clipboard Helper
-async function copyToClipboard(text, successMsg) {
+async function copyToClipboard(text, successMsg, btnElement) {
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(text);
@@ -707,6 +716,13 @@ async function copyToClipboard(text, successMsg) {
       ta.select();
       document.execCommand("copy");
       document.body.removeChild(ta);
+    }
+    if (btnElement) {
+      const origText = btnElement.textContent;
+      btnElement.textContent = "Copied!";
+      setTimeout(() => {
+        btnElement.textContent = origText;
+      }, 1500);
     }
     showToast(successMsg);
   } catch (e) {
@@ -836,22 +852,42 @@ function initEventListeners() {
     if (!found) {
       addSanRow("dns", cn);
       showToast(`Added ${cn} to SAN`);
+      debounceGenerateCSR(100);
     } else {
       showToast(`${cn} is already present in SAN`);
     }
   });
 
-  // 6. Form changes
-  elements.keyTypeSelect.addEventListener("change", updateCompatibilityStatus);
-  elements.hashSelect.addEventListener("change", updateCompatibilityStatus);
-  elements.dnCN.addEventListener("input", updateCompatibilityStatus);
+  // 6. Form changes - Automatic CSR regeneration
+  const dnInputs = [elements.dnCN, elements.dnO, elements.dnOU, elements.dnC, elements.dnST, elements.dnL, elements.dnStreet, elements.dnEmail];
+  dnInputs.forEach(input => {
+    if (input) {
+      input.addEventListener("input", () => {
+        updateCompatibilityStatus();
+        debounceGenerateCSR(300);
+      });
+    }
+  });
 
-  // 7. Generate CSR Button
-  elements.generateCsrBtn.addEventListener("click", handleGenerateCSR);
+  elements.keyTypeSelect.addEventListener("change", () => {
+    updateCompatibilityStatus();
+    debounceGenerateCSR(100);
+  });
+  elements.hashSelect.addEventListener("change", () => {
+    updateCompatibilityStatus();
+    debounceGenerateCSR(100);
+  });
 
-  // 8. Output action buttons
-  elements.copyCsrBtn.addEventListener("click", () => {
-    if (state.generatedCsr) copyToClipboard(state.generatedCsr, "CSR copied!");
+  const extCheckboxes = [elements.checkSAN, elements.checkKeyUsage, elements.checkEKU, elements.checkBasicConstraints];
+  extCheckboxes.forEach(cb => {
+    if (cb) {
+      cb.addEventListener("change", () => debounceGenerateCSR(100));
+    }
+  });
+
+  // 7. Output action buttons (with top-right copy & download buttons)
+  elements.copyCsrBtn.addEventListener("click", (e) => {
+    if (state.generatedCsr) copyToClipboard(state.generatedCsr, "CSR copied!", e.currentTarget);
   });
 
   elements.downloadCsrBtn.addEventListener("click", () => {
@@ -861,8 +897,8 @@ function initEventListeners() {
     }
   });
 
-  elements.copyKeyBtn.addEventListener("click", () => {
-    if (state.generatedKey) copyToClipboard(state.generatedKey, "Private key copied!");
+  elements.copyKeyBtn.addEventListener("click", (e) => {
+    if (state.generatedKey) copyToClipboard(state.generatedKey, "Private key copied!", e.currentTarget);
   });
 
   elements.downloadKeyBtn.addEventListener("click", () => {
@@ -883,13 +919,13 @@ function initEventListeners() {
     }
   });
 
-  elements.copyCmdBtn.addEventListener("click", () => {
-    copyToClipboard(elements.openSslCmdView.textContent, "Commands copied!");
+  elements.copyCmdBtn.addEventListener("click", (e) => {
+    copyToClipboard(elements.openSslCmdView.textContent, "Commands copied!", e.currentTarget);
   });
 
-  // Item 1: Config Buttons
-  elements.copyCnfBtn.addEventListener("click", () => {
-    if (state.generatedCnf) copyToClipboard(state.generatedCnf, "request.cnf copied!");
+  // Config Buttons
+  elements.copyCnfBtn.addEventListener("click", (e) => {
+    if (state.generatedCnf) copyToClipboard(state.generatedCnf, "request.cnf copied!", e.currentTarget);
   });
 
   elements.downloadCnfBtn.addEventListener("click", () => {
@@ -898,9 +934,9 @@ function initEventListeners() {
     }
   });
 
-  // Item 6: Certbot Command Button
-  elements.copyCertbotCmdBtn.addEventListener("click", () => {
-    copyToClipboard(elements.certbotCmdView.textContent, "Certbot command copied!");
+  // Certbot Command Button
+  elements.copyCertbotCmdBtn.addEventListener("click", (e) => {
+    copyToClipboard(elements.certbotCmdView.textContent, "Certbot command copied!", e.currentTarget);
   });
 
   // Item 2: PKCS#12 Export Button

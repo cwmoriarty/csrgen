@@ -306,6 +306,61 @@ table.data-table td {
 .notice-error   { border-left-color: #cc0000; background-color: #fff0f0; color: #990000; }
 
 /* Terminal output — cwmoriarty.com/ssl.html .output verbatim */
+.code-box-wrapper {
+  position: relative;
+  margin: 4px 0 6px 0;
+}
+
+.code-box-wrapper pre.code-output {
+  margin: 0;
+}
+
+.btn-copy-corner {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #222222;
+  color: #00ff00;
+  border: 1px solid #444444;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 2px 6px;
+  cursor: pointer;
+  text-decoration: none;
+  z-index: 2;
+  line-height: 1;
+}
+
+.btn-copy-corner:hover {
+  background: #00ff00;
+  color: #000000;
+}
+
+.btn-download {
+  appearance: auto;
+  -webkit-appearance: button;
+  background-color: #efefef;
+  color: black;
+  border: 1px solid #767676;
+  padding: 3px 10px;
+  font-family: Helvetica, Geneva, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 3px;
+  margin-right: 6px;
+  margin-top: 2px;
+}
+
+.btn-download:hover {
+  background-color: #e5e5e5;
+  border-color: #333333;
+}
+
+.btn-download:active {
+  background-color: #d4d4d4;
+}
+
 pre.code-output,
 .output {
   font-family: monospace;

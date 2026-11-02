@@ -95,19 +95,11 @@
         Status: <span id="matchBadge" style="font-weight:bold;">100% Match</span>. Cloned key cipher (<span id="bannerKeyType">RSA 2048</span>), signature digest, Subject DN hierarchy, and SANs from source certificate.
       </div>
 
-      <!-- Generate Button above cert details, below status -->
-      <div style="margin: 10px 0 14px 0;">
-        <button type="button" class="btn-html" id="generateCsrBtn">
-          <span id="genBtnSpinner" class="spinner hidden">(generating...) </span>
-          <span id="genBtnText">Generate CSR and Private Key</span>
-        </button>
-      </div>
-
       <!-- Step 2 Zippy Navigation -->
       <div class="tabs-nav" role="tablist">
         <button type="button" class="tab-btn" id="tabStep2DetailsBtn" role="tab" aria-selected="true" aria-controls="tabStep2DetailsPanel">SAN Details</button>
-        <button type="button" class="tab-btn" id="tabStep2ExportBtn" role="tab" aria-selected="false" aria-controls="tabStep2ExportPanel">Download &amp; Export</button>
-        <button type="button" class="tab-btn" id="tabStep2CommandsBtn" role="tab" aria-selected="false" aria-controls="tabStep2CommandsPanel">Commands &amp; Verification</button>
+        <button type="button" class="tab-btn" id="tabStep2ExportBtn" role="tab" aria-selected="false" aria-controls="tabStep2ExportPanel">Export</button>
+        <button type="button" class="tab-btn" id="tabStep2CommandsBtn" role="tab" aria-selected="false" aria-controls="tabStep2CommandsPanel">Verification</button>
       </div>
 
       <!-- Page 1: SAN & Certificate Details -->
@@ -257,7 +249,7 @@
         </div>
       </div>
 
-      <!-- Page 2: Download & Export -->
+      <!-- Page 2: Export -->
       <div class="tab-panel" id="tabStep2ExportPanel" role="tabpanel">
         <div id="exportReadySection">
           <div class="notice-box notice-success">
@@ -265,33 +257,48 @@
           </div>
 
           <!-- CSR Block -->
-          <div style="margin-bottom: 12px;">
+          <div style="margin-bottom: 14px;">
             <label>Certificate Signing Request (CSR):</label>
-            <pre class="code-output" id="csrPemView"></pre>
+            <div class="code-box-wrapper">
+              <button type="button" class="btn-copy-corner" id="copyCsrBtn">Copy</button>
+              <pre class="code-output" id="csrPemView"></pre>
+            </div>
             <div>
-              <button type="button" id="copyCsrBtn">Copy CSR</button>
-              <button type="button" id="downloadCsrBtn">Download .csr</button>
+              <button type="button" class="btn-download" id="downloadCsrBtn">Download .csr</button>
             </div>
           </div>
 
           <!-- Key Block -->
-          <div style="margin-bottom: 12px;">
+          <div style="margin-bottom: 14px;">
             <label>Generated Private Key (PKCS#8):</label>
-            <pre class="code-output" id="keyPemView"></pre>
+            <div class="code-box-wrapper">
+              <button type="button" class="btn-copy-corner" id="copyKeyBtn">Copy</button>
+              <pre class="code-output" id="keyPemView"></pre>
+            </div>
             <div>
-              <button type="button" id="copyKeyBtn">Copy Key</button>
-              <button type="button" id="downloadKeyBtn">Download .key</button>
-              <button type="button" id="downloadBothBtn">Download Both (.csr + .key)</button>
+              <button type="button" class="btn-download" id="downloadKeyBtn">Download .key</button>
+              <button type="button" class="btn-download" id="downloadBothBtn">Download Both (.csr + .key)</button>
             </div>
           </div>
 
           <!-- OpenSSL Configuration File -->
           <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
             <label>OpenSSL Configuration File (<code>request.cnf</code>):</label>
-            <pre class="code-output" id="openSslCnfView" style="max-height: 120px;"></pre>
+            <div class="code-box-wrapper">
+              <button type="button" class="btn-copy-corner" id="copyCnfBtn">Copy</button>
+              <pre class="code-output" id="openSslCnfView" style="max-height: 120px;"></pre>
+            </div>
             <div>
-              <button type="button" id="copyCnfBtn">Copy request.cnf</button>
-              <button type="button" id="downloadCnfBtn">Download request.cnf</button>
+              <button type="button" class="btn-download" id="downloadCnfBtn">Download request.cnf</button>
+            </div>
+          </div>
+
+          <!-- Certbot / ACME Commands -->
+          <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
+            <label>Automated CA Issuance Commands (Certbot / Let's Encrypt / ACME):</label>
+            <div class="code-box-wrapper">
+              <button type="button" class="btn-copy-corner" id="copyCertbotCmdBtn">Copy</button>
+              <pre class="code-output" id="certbotCmdView" style="max-height: 110px;"></pre>
             </div>
           </div>
 
@@ -310,7 +317,7 @@
               <tr>
                 <td></td>
                 <td>
-                  <button type="button" class="btn-primary" id="downloadP12Btn">Download .p12 / .pfx Bundle</button>
+                  <button type="button" class="btn-download" id="downloadP12Btn">Download .p12 / .pfx Bundle</button>
                 </td>
               </tr>
             </table>
@@ -318,23 +325,14 @@
         </div>
       </div>
 
-      <!-- Page 3: Automated CA Issuance Commands & Verification Table -->
+      <!-- Page 3: Verification -->
       <div class="tab-panel" id="tabStep2CommandsPanel" role="tabpanel">
-        <!-- Certbot / ACME Commands -->
-        <div style="margin-bottom: 14px;">
-          <label>Automated CA Issuance Commands (Certbot / Let's Encrypt / ACME):</label>
-          <pre class="code-output" id="certbotCmdView" style="max-height: 110px;"></pre>
-          <div>
-            <button type="button" id="copyCertbotCmdBtn">Copy Certbot Command</button>
-          </div>
-        </div>
-
         <!-- OpenSSL CLI Verification -->
-        <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
+        <div style="margin-bottom: 14px;">
           <label>OpenSSL CLI Verification Commands:</label>
-          <pre class="code-output" id="openSslCmdView" style="max-height: 80px;"></pre>
-          <div>
-            <button type="button" id="copyCmdBtn">Copy Verification Commands</button>
+          <div class="code-box-wrapper">
+            <button type="button" class="btn-copy-corner" id="copyCmdBtn">Copy</button>
+            <pre class="code-output" id="openSslCmdView" style="max-height: 80px;"></pre>
           </div>
         </div>
 

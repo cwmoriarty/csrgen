@@ -312,6 +312,61 @@ table.data-table td {
 .notice-error   { border-left-color: #cc0000; background-color: #fff0f0; color: #990000; }
 
 /* Terminal output — cwmoriarty.com/ssl.html .output verbatim */
+.code-box-wrapper {
+  position: relative;
+  margin: 4px 0 6px 0;
+}
+
+.code-box-wrapper pre.code-output {
+  margin: 0;
+}
+
+.btn-copy-corner {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #222222;
+  color: #00ff00;
+  border: 1px solid #444444;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 2px 6px;
+  cursor: pointer;
+  text-decoration: none;
+  z-index: 2;
+  line-height: 1;
+}
+
+.btn-copy-corner:hover {
+  background: #00ff00;
+  color: #000000;
+}
+
+.btn-download {
+  appearance: auto;
+  -webkit-appearance: button;
+  background-color: #efefef;
+  color: black;
+  border: 1px solid #767676;
+  padding: 3px 10px;
+  font-family: Helvetica, Geneva, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 3px;
+  margin-right: 6px;
+  margin-top: 2px;
+}
+
+.btn-download:hover {
+  background-color: #e5e5e5;
+  border-color: #333333;
+}
+
+.btn-download:active {
+  background-color: #d4d4d4;
+}
+
 pre.code-output,
 .output {
   font-family: monospace;
@@ -447,19 +502,11 @@ pre.code-output,
         Status: <span id="matchBadge" style="font-weight:bold;">100% Match</span>. Cloned key cipher (<span id="bannerKeyType">RSA 2048</span>), signature digest, Subject DN hierarchy, and SANs from source certificate.
       </div>
 
-      <!-- Generate Button above cert details, below status -->
-      <div style="margin: 10px 0 14px 0;">
-        <button type="button" class="btn-html" id="generateCsrBtn">
-          <span id="genBtnSpinner" class="spinner hidden">(generating...) </span>
-          <span id="genBtnText">Generate CSR and Private Key</span>
-        </button>
-      </div>
-
       <!-- Step 2 Zippy Navigation -->
       <div class="tabs-nav" role="tablist">
         <button type="button" class="tab-btn" id="tabStep2DetailsBtn" role="tab" aria-selected="true" aria-controls="tabStep2DetailsPanel">SAN Details</button>
-        <button type="button" class="tab-btn" id="tabStep2ExportBtn" role="tab" aria-selected="false" aria-controls="tabStep2ExportPanel">Download &amp; Export</button>
-        <button type="button" class="tab-btn" id="tabStep2CommandsBtn" role="tab" aria-selected="false" aria-controls="tabStep2CommandsPanel">Commands &amp; Verification</button>
+        <button type="button" class="tab-btn" id="tabStep2ExportBtn" role="tab" aria-selected="false" aria-controls="tabStep2ExportPanel">Export</button>
+        <button type="button" class="tab-btn" id="tabStep2CommandsBtn" role="tab" aria-selected="false" aria-controls="tabStep2CommandsPanel">Verification</button>
       </div>
 
       <!-- Page 1: SAN & Certificate Details -->
@@ -609,7 +656,7 @@ pre.code-output,
         </div>
       </div>
 
-      <!-- Page 2: Download & Export -->
+      <!-- Page 2: Export -->
       <div class="tab-panel" id="tabStep2ExportPanel" role="tabpanel">
         <div id="exportReadySection">
           <div class="notice-box notice-success">
@@ -617,33 +664,48 @@ pre.code-output,
           </div>
 
           <!-- CSR Block -->
-          <div style="margin-bottom: 12px;">
+          <div style="margin-bottom: 14px;">
             <label>Certificate Signing Request (CSR):</label>
-            <pre class="code-output" id="csrPemView"></pre>
+            <div class="code-box-wrapper">
+              <button type="button" class="btn-copy-corner" id="copyCsrBtn">Copy</button>
+              <pre class="code-output" id="csrPemView"></pre>
+            </div>
             <div>
-              <button type="button" id="copyCsrBtn">Copy CSR</button>
-              <button type="button" id="downloadCsrBtn">Download .csr</button>
+              <button type="button" class="btn-download" id="downloadCsrBtn">Download .csr</button>
             </div>
           </div>
 
           <!-- Key Block -->
-          <div style="margin-bottom: 12px;">
+          <div style="margin-bottom: 14px;">
             <label>Generated Private Key (PKCS#8):</label>
-            <pre class="code-output" id="keyPemView"></pre>
+            <div class="code-box-wrapper">
+              <button type="button" class="btn-copy-corner" id="copyKeyBtn">Copy</button>
+              <pre class="code-output" id="keyPemView"></pre>
+            </div>
             <div>
-              <button type="button" id="copyKeyBtn">Copy Key</button>
-              <button type="button" id="downloadKeyBtn">Download .key</button>
-              <button type="button" id="downloadBothBtn">Download Both (.csr + .key)</button>
+              <button type="button" class="btn-download" id="downloadKeyBtn">Download .key</button>
+              <button type="button" class="btn-download" id="downloadBothBtn">Download Both (.csr + .key)</button>
             </div>
           </div>
 
           <!-- OpenSSL Configuration File -->
           <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
             <label>OpenSSL Configuration File (<code>request.cnf</code>):</label>
-            <pre class="code-output" id="openSslCnfView" style="max-height: 120px;"></pre>
+            <div class="code-box-wrapper">
+              <button type="button" class="btn-copy-corner" id="copyCnfBtn">Copy</button>
+              <pre class="code-output" id="openSslCnfView" style="max-height: 120px;"></pre>
+            </div>
             <div>
-              <button type="button" id="copyCnfBtn">Copy request.cnf</button>
-              <button type="button" id="downloadCnfBtn">Download request.cnf</button>
+              <button type="button" class="btn-download" id="downloadCnfBtn">Download request.cnf</button>
+            </div>
+          </div>
+
+          <!-- Certbot / ACME Commands -->
+          <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
+            <label>Automated CA Issuance Commands (Certbot / Let's Encrypt / ACME):</label>
+            <div class="code-box-wrapper">
+              <button type="button" class="btn-copy-corner" id="copyCertbotCmdBtn">Copy</button>
+              <pre class="code-output" id="certbotCmdView" style="max-height: 110px;"></pre>
             </div>
           </div>
 
@@ -662,7 +724,7 @@ pre.code-output,
               <tr>
                 <td></td>
                 <td>
-                  <button type="button" class="btn-primary" id="downloadP12Btn">Download .p12 / .pfx Bundle</button>
+                  <button type="button" class="btn-download" id="downloadP12Btn">Download .p12 / .pfx Bundle</button>
                 </td>
               </tr>
             </table>
@@ -670,23 +732,14 @@ pre.code-output,
         </div>
       </div>
 
-      <!-- Page 3: Automated CA Issuance Commands & Verification Table -->
+      <!-- Page 3: Verification -->
       <div class="tab-panel" id="tabStep2CommandsPanel" role="tabpanel">
-        <!-- Certbot / ACME Commands -->
-        <div style="margin-bottom: 14px;">
-          <label>Automated CA Issuance Commands (Certbot / Let's Encrypt / ACME):</label>
-          <pre class="code-output" id="certbotCmdView" style="max-height: 110px;"></pre>
-          <div>
-            <button type="button" id="copyCertbotCmdBtn">Copy Certbot Command</button>
-          </div>
-        </div>
-
         <!-- OpenSSL CLI Verification -->
-        <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
+        <div style="margin-bottom: 14px;">
           <label>OpenSSL CLI Verification Commands:</label>
-          <pre class="code-output" id="openSslCmdView" style="max-height: 80px;"></pre>
-          <div>
-            <button type="button" id="copyCmdBtn">Copy Verification Commands</button>
+          <div class="code-box-wrapper">
+            <button type="button" class="btn-copy-corner" id="copyCmdBtn">Copy</button>
+            <pre class="code-output" id="openSslCmdView" style="max-height: 80px;"></pre>
           </div>
         </div>
 
@@ -1005,9 +1058,6 @@ const elements = {
   checkKeyUsage: document.getElementById("checkKeyUsage"),
   checkEKU: document.getElementById("checkEKU"),
   checkBasicConstraints: document.getElementById("checkBasicConstraints"),
-  generateCsrBtn: document.getElementById("generateCsrBtn"),
-  genBtnSpinner: document.getElementById("genBtnSpinner"),
-  genBtnText: document.getElementById("genBtnText"),
 
   // Output View
   csrPemView: document.getElementById("csrPemView"),
@@ -1125,7 +1175,7 @@ function resetCertImport() {
 }
 
 // Parse Certificate and Transition to Step 2
-function handleCertificateLoaded(rawInput) {
+async function handleCertificateLoaded(rawInput) {
   try {
     const parsed = window.SnapInPKI.parseCertificate(rawInput);
     state.parsedCert = parsed;
@@ -1142,7 +1192,11 @@ function handleCertificateLoaded(rawInput) {
 
     selectStep2Tab(elements.tabStep2DetailsBtn, elements.tabStep2DetailsPanel);
     elements.stepConfig.classList.remove("hidden");
-    showToast("Certificate parsed successfully!");
+
+    // Automatically generate matching CSR and key pair
+    await handleGenerateCSR();
+
+    showToast("Certificate imported & matching CSR generated!");
   } catch (err) {
     console.error(err);
     alert("Error parsing certificate: " + err.message);
@@ -1270,10 +1324,17 @@ function addSanRow(type = "dns", value = "") {
   row.querySelector(".btn-del-san").addEventListener("click", () => {
     row.remove();
     updateCompatibilityStatus();
+    debounceGenerateCSR(200);
   });
 
-  row.querySelector(".san-value-input").addEventListener("input", updateCompatibilityStatus);
-  row.querySelector(".san-type-select").addEventListener("change", updateCompatibilityStatus);
+  row.querySelector(".san-value-input").addEventListener("input", () => {
+    updateCompatibilityStatus();
+    debounceGenerateCSR(300);
+  });
+  row.querySelector(".san-type-select").addEventListener("change", () => {
+    updateCompatibilityStatus();
+    debounceGenerateCSR(100);
+  });
 
   elements.sanListContainer.appendChild(row);
 }
@@ -1305,11 +1366,19 @@ function updateCompatibilityStatus() {
   }
 }
 
-// Generate Snap-In CSR
-async function handleGenerateCSR() {
-  if (!elements.dnCN.value.trim()) {
-    alert("Common Name (CN) is required to generate a certificate request.");
-    elements.dnCN.focus();
+// Automatic CSR & Key Generation
+let debounceTimer = null;
+function debounceGenerateCSR(delay = 300) {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    if (state.parsedCert && elements.dnCN && elements.dnCN.value.trim()) {
+      handleGenerateCSR(false);
+    }
+  }, delay);
+}
+
+async function handleGenerateCSR(switchTab = false) {
+  if (!elements.dnCN || !elements.dnCN.value.trim()) {
     return;
   }
 
@@ -1352,10 +1421,6 @@ async function handleGenerateCSR() {
     ekus.push("1.3.6.1.5.5.7.3.1"); // serverAuth
     ekus.push("1.3.6.1.5.5.7.3.2"); // clientAuth
   }
-
-  elements.genBtnSpinner.classList.remove("hidden");
-  elements.genBtnText.textContent = "Generating Cryptographic Key Pair...";
-  elements.generateCsrBtn.disabled = true;
 
   try {
     let result;
@@ -1419,17 +1484,14 @@ async function handleGenerateCSR() {
 
     displayGeneratedOutput(result, decoded, selectedKeyType, keyParam);
 
-    selectStep2Tab(elements.tabStep2ExportBtn, elements.tabStep2ExportPanel);
-    showToast("CSR and Private Key generated successfully!");
+    if (switchTab) {
+      selectStep2Tab(elements.tabStep2ExportBtn, elements.tabStep2ExportPanel);
+    }
   } catch (err) {
     console.error("CSR generation error", err);
     if (!err.message.includes("PQC server required")) {
       alert("CSR Generation Failed: " + err.message);
     }
-  } finally {
-    elements.genBtnSpinner.classList.add("hidden");
-    elements.genBtnText.textContent = "Generate CSR and Private Key";
-    elements.generateCsrBtn.disabled = false;
   }
 }
 
@@ -1564,7 +1626,7 @@ function downloadFile(content, filename, type = "text/plain") {
 }
 
 // Copy to Clipboard Helper
-async function copyToClipboard(text, successMsg) {
+async function copyToClipboard(text, successMsg, btnElement) {
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(text);
@@ -1575,6 +1637,13 @@ async function copyToClipboard(text, successMsg) {
       ta.select();
       document.execCommand("copy");
       document.body.removeChild(ta);
+    }
+    if (btnElement) {
+      const origText = btnElement.textContent;
+      btnElement.textContent = "Copied!";
+      setTimeout(() => {
+        btnElement.textContent = origText;
+      }, 1500);
     }
     showToast(successMsg);
   } catch (e) {
@@ -1704,22 +1773,42 @@ function initEventListeners() {
     if (!found) {
       addSanRow("dns", cn);
       showToast(`Added ${cn} to SAN`);
+      debounceGenerateCSR(100);
     } else {
       showToast(`${cn} is already present in SAN`);
     }
   });
 
-  // 6. Form changes
-  elements.keyTypeSelect.addEventListener("change", updateCompatibilityStatus);
-  elements.hashSelect.addEventListener("change", updateCompatibilityStatus);
-  elements.dnCN.addEventListener("input", updateCompatibilityStatus);
+  // 6. Form changes - Automatic CSR regeneration
+  const dnInputs = [elements.dnCN, elements.dnO, elements.dnOU, elements.dnC, elements.dnST, elements.dnL, elements.dnStreet, elements.dnEmail];
+  dnInputs.forEach(input => {
+    if (input) {
+      input.addEventListener("input", () => {
+        updateCompatibilityStatus();
+        debounceGenerateCSR(300);
+      });
+    }
+  });
 
-  // 7. Generate CSR Button
-  elements.generateCsrBtn.addEventListener("click", handleGenerateCSR);
+  elements.keyTypeSelect.addEventListener("change", () => {
+    updateCompatibilityStatus();
+    debounceGenerateCSR(100);
+  });
+  elements.hashSelect.addEventListener("change", () => {
+    updateCompatibilityStatus();
+    debounceGenerateCSR(100);
+  });
 
-  // 8. Output action buttons
-  elements.copyCsrBtn.addEventListener("click", () => {
-    if (state.generatedCsr) copyToClipboard(state.generatedCsr, "CSR copied!");
+  const extCheckboxes = [elements.checkSAN, elements.checkKeyUsage, elements.checkEKU, elements.checkBasicConstraints];
+  extCheckboxes.forEach(cb => {
+    if (cb) {
+      cb.addEventListener("change", () => debounceGenerateCSR(100));
+    }
+  });
+
+  // 7. Output action buttons (with top-right copy & download buttons)
+  elements.copyCsrBtn.addEventListener("click", (e) => {
+    if (state.generatedCsr) copyToClipboard(state.generatedCsr, "CSR copied!", e.currentTarget);
   });
 
   elements.downloadCsrBtn.addEventListener("click", () => {
@@ -1729,8 +1818,8 @@ function initEventListeners() {
     }
   });
 
-  elements.copyKeyBtn.addEventListener("click", () => {
-    if (state.generatedKey) copyToClipboard(state.generatedKey, "Private key copied!");
+  elements.copyKeyBtn.addEventListener("click", (e) => {
+    if (state.generatedKey) copyToClipboard(state.generatedKey, "Private key copied!", e.currentTarget);
   });
 
   elements.downloadKeyBtn.addEventListener("click", () => {
@@ -1751,13 +1840,13 @@ function initEventListeners() {
     }
   });
 
-  elements.copyCmdBtn.addEventListener("click", () => {
-    copyToClipboard(elements.openSslCmdView.textContent, "Commands copied!");
+  elements.copyCmdBtn.addEventListener("click", (e) => {
+    copyToClipboard(elements.openSslCmdView.textContent, "Commands copied!", e.currentTarget);
   });
 
-  // Item 1: Config Buttons
-  elements.copyCnfBtn.addEventListener("click", () => {
-    if (state.generatedCnf) copyToClipboard(state.generatedCnf, "request.cnf copied!");
+  // Config Buttons
+  elements.copyCnfBtn.addEventListener("click", (e) => {
+    if (state.generatedCnf) copyToClipboard(state.generatedCnf, "request.cnf copied!", e.currentTarget);
   });
 
   elements.downloadCnfBtn.addEventListener("click", () => {
@@ -1766,9 +1855,9 @@ function initEventListeners() {
     }
   });
 
-  // Item 6: Certbot Command Button
-  elements.copyCertbotCmdBtn.addEventListener("click", () => {
-    copyToClipboard(elements.certbotCmdView.textContent, "Certbot command copied!");
+  // Certbot Command Button
+  elements.copyCertbotCmdBtn.addEventListener("click", (e) => {
+    copyToClipboard(elements.certbotCmdView.textContent, "Certbot command copied!", e.currentTarget);
   });
 
   // Item 2: PKCS#12 Export Button
