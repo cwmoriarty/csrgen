@@ -70,8 +70,6 @@ const state = {
 
 // DOM Elements
 const elements = {
-  companionStatus: document.getElementById("companionStatus"),
-  companionText: document.getElementById("companionText"),
   stepConfig: document.getElementById("stepConfig"),
   stepOutput: document.getElementById("stepOutput"),
   toast: document.getElementById("toast"),
@@ -164,18 +162,12 @@ async function checkServerStatus() {
       const data = await res.json();
       if (data.status === "ok") {
         state.hasCompanionServer = true;
-        if (elements.companionText) {
-          elements.companionText.textContent = "[Server Mode: Active - Live HTTPS inspection, P12 export & PQC ready]";
-        }
         return;
       }
     }
   } catch (e) {}
 
   state.hasCompanionServer = false;
-  if (elements.companionText) {
-    elements.companionText.textContent = "[Browser Standalone Mode: File upload, paste, Ed25519 & samples active]";
-  }
 }
 
 // Toast helper
