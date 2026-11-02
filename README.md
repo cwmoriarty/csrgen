@@ -45,10 +45,4 @@ Click and run CSRGen directly in your browser:
 👉 **[https://cwmoriarty.github.io/csrgen/](https://cwmoriarty.github.io/csrgen/)** (or [cwmoriarty.com/csrgen](https://cwmoriarty.com/csrgen/))
 
 ### Standalone (Offline / Air-Gapped)
-Open [`index.html`](index.html) directly in any web browser. File uploads, PEM pasting, key generation, and CSR downloads work 100% offline.
-
-### Companion Server (Live HTTPS Inspection)
-```bash
-npm start
-```
-Navigate to **http://localhost:3000** in your browser.
+Open [`index.html`](index.html) (or `csrgen.html`) directly in any web browser. File uploads, PEM pasting, key generation, certificate renewal calendar alerts, and CSR downloads work 100% offline with zero dependencies and no build step.
