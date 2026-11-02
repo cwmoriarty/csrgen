@@ -4,124 +4,95 @@
   <meta charset="UTF-8">
   <title>CSRGen</title>
   <style>
-/* cwmoriarty.com aesthetic for CSRGen */
+/* cwmoriarty.com aesthetic — exact match */
 :root {
-  --font-main: Helvetica, Geneva, Arial, sans-serif;
-  --font-mono: monospace;
-  --color-bg: #ffffff;
-  --color-text: #000000;
-  --color-border: #000000;
-  --color-btn-bg: #f2f2f2;
-  --color-btn-hover: #000000;
-  --color-term-bg: #000000;
-  --color-term-text: lime; /* #00ff00 like cwmoriarty.com/ssl.html */
-  --border-dark: #000000;
-  --border-light: #cccccc;
-  --bg-panel: #fafafa;
-  --text-link: #000000;
   --highlight-match: #008800;
-  --highlight-warn: #bb6600;
-  --highlight-err: #cc0000;
+  --highlight-warn:  #bb6600;
+  --highlight-err:   #cc0000;
+  --border-light:    #cccccc;
+  --border-dark:     #000000;
+  --bg-panel:        #ffffff;
+  --color-term-bg:   #000000;
+  --color-term-text: lime;
 }
 
-* {
-  box-sizing: border-box;
+/* ── Base (cwmoriarty.com verbatim) ─────────────────────────── */
+body { font-family: Helvetica, Geneva, sans-serif; }
+a    { color: black; }
+li   { list-style-type: none; padding-left: 20px; }
+
+/* ── libleft (cwmoriarty.com verbatim) ──────────────────────── */
+.libleft {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
 }
 
-body {
-  margin: 0;
-  padding: 16px;
-  background-color: #ffffff;
-  color: var(--color-text);
-  font-family: var(--font-main);
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-a {
-  color: #000000;
-  text-decoration: underline;
-}
-
-a:hover {
-  background-color: #000000;
-  color: #ffffff;
-  text-decoration: none;
-}
+/* ── Minimal layout ─────────────────────────────────────────── */
+* { box-sizing: border-box; }
 
 .container {
   max-width: 880px;
-  margin: 10px auto 50px auto;
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  padding: 24px 28px;
+  margin: 20px auto 60px auto;
+  padding: 20px 24px;
 }
 
 /* Header */
 .app-header {
-  border-bottom: 2px solid #000000;
-  padding-bottom: 12px;
+  border-bottom: 1px solid black;
+  padding-bottom: 10px;
   margin-bottom: 16px;
 }
 
 h1 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
   margin: 0;
-  letter-spacing: -0.5px;
 }
 
-/* Fieldset & Legend */
+/* Fieldset / sections — no decorative border on outer container */
 fieldset {
-  border: 1px solid var(--color-border);
+  border: none;
   margin: 0 0 16px 0;
-  padding: 12px 16px 16px;
-  background-color: #ffffff;
+  padding: 0;
 }
 
 legend {
   font-weight: bold;
   font-size: 14px;
-  padding: 0 6px;
-  color: #000000;
-}
-
-.section-desc {
-  font-size: 12px;
-  color: #444444;
-  margin-bottom: 10px;
+  padding: 0;
+  margin-bottom: 8px;
 }
 
 /* Tabs */
 .tabs-nav {
   display: flex;
-  gap: 3px;
-  border-bottom: 1px solid #000000;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .tab-btn {
-  background: var(--color-btn-bg);
-  color: #000000;
-  border: 1px solid #000000;
-  border-bottom: none;
-  padding: 4px 12px;
-  font-size: 12px;
-  font-family: var(--font-main);
+  background: none;
+  color: black;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 2px 0;
+  margin-right: 10px;
+  font-size: 14px;
+  font-family: Helvetica, Geneva, sans-serif;
   cursor: pointer;
-  margin-bottom: -1px;
+  text-decoration: underline;
 }
 
 .tab-btn:hover {
-  background: #000000;
-  color: #ffffff;
+  color: black;
 }
 
 .tab-btn[aria-selected="true"] {
-  background: #ffffff;
-  color: #000000;
+  text-decoration: none;
   font-weight: bold;
-  border-bottom: 1px solid #ffffff;
+  border-bottom: 1px solid black;
+  cursor: default;
 }
 
 .tab-panel {
@@ -133,7 +104,7 @@ legend {
   display: block;
 }
 
-/* Inputs & Form Elements */
+/* Inputs */
 label {
   font-weight: bold;
   font-size: 13px;
@@ -145,22 +116,21 @@ input[type="text"],
 input[type="url"],
 select,
 textarea {
-  font-family: var(--font-main);
+  font-family: Helvetica, Geneva, sans-serif;
   font-size: 13px;
-  padding: 4px 6px;
-  border: 1px solid #000000;
-  background-color: #ffffff;
-  color: #000000;
+  padding: 3px 5px;
+  border: 1px solid black;
+  background-color: white;
+  color: black;
 }
 
 input[type="text"]:focus,
 input[type="url"]:focus,
 select:focus,
 textarea:focus {
-  outline: 2px solid #000000;
+  outline: 2px solid black;
 }
 
-/* Validation */
 input:not([type="checkbox"]):not([type="radio"]):user-invalid,
 textarea:user-invalid {
   border-color: #cc0000;
@@ -168,80 +138,59 @@ textarea:user-invalid {
 }
 
 textarea {
-  font-family: var(--font-mono);
+  font-family: monospace;
   font-size: 12px;
   width: 100%;
-  box-sizing: border-box;
 }
 
 /* Buttons */
 button,
 input[type="button"],
 input[type="submit"] {
-  font-family: var(--font-main);
-  font-size: 12px;
-  padding: 4px 10px;
-  background-color: var(--color-btn-bg);
-  color: #000000;
-  border: 1px solid #000000;
+  font-family: Helvetica, Geneva, sans-serif;
+  font-size: 13px;
+  padding: 2px 8px;
+  background: none;
+  color: black;
+  border: none;
   cursor: pointer;
+  text-decoration: underline;
 }
 
 button:hover,
 input[type="button"]:hover,
 input[type="submit"]:hover {
-  background-color: #000000;
-  color: #ffffff;
-}
-
-button:active,
-input[type="button"]:active,
-input[type="submit"]:active {
-  background-color: #333333;
-  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 button:disabled,
 input[type="button"]:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  background-color: #f2f2f2;
-  color: #888888;
-}
-
-.btn-primary {
-  font-weight: bold;
 }
 
 .btn-hero {
-  padding: 8px 18px;
   font-size: 14px;
   font-weight: bold;
-  border: 2px solid #000000;
-  background-color: #f2f2f2;
-  color: #000000;
+  text-decoration: underline;
+  padding: 4px 0;
 }
 
 .btn-hero:hover {
-  background-color: #000000;
-  color: #ffffff;
+  text-decoration: none;
 }
 
-/* File Selector */
+/* File selector */
 input[type="file"]::file-selector-button {
-  font-family: var(--font-main);
+  font-family: Helvetica, Geneva, sans-serif;
   font-size: 12px;
-  padding: 3px 8px;
-  background-color: var(--color-btn-bg);
-  color: #000000;
-  border: 1px solid #000000;
+  padding: 2px 8px;
+  background: none;
+  color: black;
+  border: 1px solid black;
   cursor: pointer;
   margin-right: 8px;
-}
-
-input[type="file"]::file-selector-button:hover {
-  background-color: #000000;
-  color: #ffffff;
 }
 
 /* Tables */
@@ -254,7 +203,7 @@ table.data-table {
 }
 
 table.form-table td {
-  padding: 4px 6px;
+  padding: 3px 6px;
   vertical-align: middle;
 }
 
@@ -267,118 +216,78 @@ table.form-table td.label-cell {
 }
 
 table.data-table {
-  border: 1px solid #000000;
+  border: 1px solid black;
 }
 
 table.data-table th {
   background-color: #f0f0f0;
-  border: 1px solid #000000;
-  padding: 5px 8px;
+  border: 1px solid black;
+  padding: 4px 8px;
   text-align: left;
   font-weight: bold;
 }
 
 table.data-table td {
-  border: 1px solid #000000;
-  padding: 5px 8px;
+  border: 1px solid black;
+  padding: 4px 8px;
 }
 
-.match-exact {
-  font-weight: bold;
-  color: var(--highlight-match);
-}
+.match-exact { font-weight: bold; color: var(--highlight-match); }
+.match-diff  { font-weight: bold; color: var(--highlight-warn); }
 
-.match-diff {
-  font-weight: bold;
-  color: var(--highlight-warn);
-}
-
-/* Step 2 Split Layout */
+/* Step 2 split layout */
 .step2-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 240px 1fr;
   gap: 16px;
 }
 
 @media (max-width: 768px) {
-  .step2-layout {
-    grid-template-columns: 1fr;
-  }
+  .step2-layout { grid-template-columns: 1fr; }
 }
 
 .source-box {
-  background: var(--bg-panel);
-  border: 1px solid #000000;
+  background: #fafafa;
+  border: 1px solid black;
   padding: 10px 12px;
 }
 
 .source-box h4 {
   margin: 0 0 8px 0;
   font-size: 13px;
-  border-bottom: 1px solid #000000;
+  border-bottom: 1px solid black;
   padding-bottom: 4px;
 }
 
-.meta-row {
-  margin-bottom: 6px;
-  font-size: 12px;
-}
+.meta-row   { margin-bottom: 6px; font-size: 12px; }
+.meta-label { font-weight: bold; }
+.meta-val   { font-family: monospace; font-size: 11px; word-break: break-all; }
 
-.meta-label {
-  font-weight: bold;
-}
+/* SAN rows */
+.san-row { display: flex; gap: 6px; align-items: center; margin-bottom: 4px; }
+.san-row select { width: 100px; }
+.san-row input  { flex: 1; }
 
-.meta-val {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  word-break: break-all;
-}
-
-/* SAN Rows */
-.san-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.san-row select {
-  width: 100px;
-}
-
-.san-row input {
-  flex: 1;
-}
-
-/* Notice Box */
+/* Notice */
 .notice-box {
-  border: 1px solid #000000;
+  border-left: 3px solid black;
   background-color: #fafafa;
-  padding: 6px 10px;
+  padding: 5px 10px;
   font-size: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
+.notice-success { border-left-color: #007700; background-color: #f4faf4; }
+.notice-error   { border-left-color: #cc0000; background-color: #fff0f0; color: #990000; }
 
-.notice-success {
-  border: 1px solid #000000;
-  background-color: #f4faf4;
-}
-
-.notice-error {
-  border: 1px solid #cc0000;
-  background-color: #fff0f0;
-  color: #990000;
-}
-
-/* Retro Monospace Output (Matching cwmoriarty.com/ssl.html .output) */
+/* Terminal output — cwmoriarty.com/ssl.html .output verbatim */
 pre.code-output,
 .output {
-  margin: 4px 0 8px 0;
+  font-family: monospace;
+  color: lime;
+  background-color: black;
+  border: 1px solid black;
   padding: 8px 10px;
-  background-color: var(--color-term-bg);
-  color: var(--color-term-text);
-  border: 1px solid #000000;
-  font-family: var(--font-mono);
+  margin: 4px 0 8px 0;
   font-size: 11px;
   line-height: 1.35;
   white-space: pre;
@@ -387,28 +296,12 @@ pre.code-output,
   user-select: text;
 }
 
-/* Bottom Left Link Widget (Matching cwmoriarty.com .libleft) */
-.libleft {
-  position: fixed;
-  left: 10px;
-  bottom: 10px;
-  font-size: 11px;
-  font-family: var(--font-main);
-  background: #ffffff;
-  padding: 3px 6px;
-  border: 1px solid #000000;
-  z-index: 999;
-}
-
-.libleft a {
-  color: #000000;
-  text-decoration: underline;
-}
-
-.libleft a:hover {
-  background-color: #000000;
-  color: #ffffff;
-  text-decoration: none;
+/* Section sub-headers */
+.section-sub {
+  font-weight: bold;
+  border-bottom: 1px solid #cccccc;
+  margin-bottom: 8px;
+  padding-bottom: 2px;
 }
 
 /* Toast */
@@ -416,29 +309,19 @@ pre.code-output,
   position: fixed;
   bottom: 12px;
   right: 12px;
-  background-color: #000000;
-  color: #ffffff;
-  border: 1px solid #000000;
+  background-color: black;
+  color: white;
   padding: 4px 10px;
   font-size: 12px;
-  font-family: var(--font-main);
+  font-family: Helvetica, Geneva, sans-serif;
   display: none;
   z-index: 1000;
 }
+.toast.show { display: block; }
 
-.toast.show {
-  display: block;
-}
+.hidden { display: none !important; }
 
-.hidden {
-  display: none !important;
-}
-
-.spinner {
-  display: inline-block;
-  font-style: italic;
-  font-size: 11px;
-}
+.spinner { font-style: italic; font-size: 11px; }
 
 </style>
 </head>
@@ -452,21 +335,20 @@ pre.code-output,
     <!-- STEP 1: Provide Source Certificate -->
     <fieldset id="stepInput">
       <legend>Step 1: Input Existing Certificate</legend>
-      <div class="section-desc">Select how you want to provide the existing certificate:</div>
 
       <!-- Tab Buttons -->
       <div class="tabs-nav" role="tablist">
-        <button type="button" class="tab-btn" id="tabUrlBtn" role="tab" aria-selected="true" aria-controls="tabUrlPanel">Live HTTPS URL</button>
-        <button type="button" class="tab-btn" id="tabUploadBtn" role="tab" aria-selected="false" aria-controls="tabUploadPanel">Upload File (.crt / .pem / .der)</button>
+        <button type="button" class="tab-btn" id="tabUrlBtn" role="tab" aria-selected="true" aria-controls="tabUrlPanel">URL</button>
+        <button type="button" class="tab-btn" id="tabUploadBtn" role="tab" aria-selected="false" aria-controls="tabUploadPanel">Upload File</button>
         <button type="button" class="tab-btn" id="tabPasteBtn" role="tab" aria-selected="false" aria-controls="tabPastePanel">Paste PEM</button>
-        <button type="button" class="tab-btn" id="tabDemoBtn" role="tab" aria-selected="false" aria-controls="tabDemoPanel">Quick Samples</button>
+        <button type="button" class="tab-btn" id="tabDemoBtn" role="tab" aria-selected="false" aria-controls="tabDemoPanel">Help</button>
       </div>
 
       <!-- Tab 1: URL Fetch -->
       <div class="tab-panel active" id="tabUrlPanel" role="tabpanel">
         <table class="form-table" style="max-width: 650px;">
           <tr>
-            <td class="label-cell"><label for="urlInput">HTTPS URL / Hostname:</label></td>
+            <td class="label-cell"><label for="urlInput">URL:</label></td>
             <td>
               <input type="text" id="urlInput" placeholder="https://example.com or host.domain:8443" style="width: 320px;">
               <button type="button" class="btn-primary" id="fetchUrlBtn">
@@ -481,7 +363,7 @@ pre.code-output,
 
       <!-- Tab 2: Upload File -->
       <div class="tab-panel" id="tabUploadPanel" role="tabpanel">
-        <div id="dropZone" style="border: 1px dashed var(--border-dark); padding: 12px; background: var(--bg-panel); margin-bottom: 8px;">
+        <div id="dropZone" style="padding: 8px 0; margin-bottom: 8px;">
           <label for="fileInput">Select or drop certificate file (.crt, .pem, .cer, .der):</label><br>
           <input type="file" id="fileInput" accept=".crt,.pem,.cer,.der" style="margin-top: 6px;">
         </div>
@@ -496,31 +378,33 @@ pre.code-output,
         </div>
       </div>
 
-      <!-- Tab 4: Quick Samples -->
+      <!-- Tab 4: Help -->
       <div class="tab-panel" id="tabDemoPanel" role="tabpanel">
+        <p>CSRGen generates a Certificate Signing Request (CSR) that matches the cipher type, key size, subject, and SANs of an existing certificate &mdash; making it easy to renew or replace a cert without misconfiguring clients or fat-fingering fields.</p>
+        <p>Load a sample below to try it out:</p>
         <table class="data-table">
           <thead>
             <tr>
-              <th>Sample Preset</th>
+              <th>Sample</th>
               <th>Parameters</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><b>Multi-Domain RSA Certificate</b></td>
-              <td>RSA 2048-bit with SHA-256; CN=payments.acme-corp.com; 3 SANs (DNS & IP)</td>
-              <td><button type="button" id="loadSampleRsaBtn">Load RSA Sample</button></td>
+              <td><b>Multi-Domain RSA</b></td>
+              <td>RSA 2048-bit, SHA-256; CN=payments.acme-corp.com; 3 SANs (DNS &amp; IP)</td>
+              <td><button type="button" id="loadSampleRsaBtn">Load</button></td>
             </tr>
             <tr>
-              <td><b>Cloud API ECDSA Certificate</b></td>
-              <td>ECDSA NIST P-256 with SHA-256; CN=gateway.cloudapi.net; 2 SANs</td>
-              <td><button type="button" id="loadSampleEcBtn">Load ECDSA Sample</button></td>
+              <td><b>Cloud API ECDSA</b></td>
+              <td>ECDSA P-256, SHA-256; CN=gateway.cloudapi.net; 2 SANs</td>
+              <td><button type="button" id="loadSampleEcBtn">Load</button></td>
             </tr>
             <tr>
-              <td><b>Modern Ed25519 Certificate</b></td>
-              <td>Ed25519 Pure Signature; CN=ed25519.fast-auth.org</td>
-              <td><button type="button" id="loadSampleEdBtn">Load Ed25519 Sample</button></td>
+              <td><b>Ed25519</b></td>
+              <td>Ed25519 pure signature; CN=ed25519.fast-auth.org</td>
+              <td><button type="button" id="loadSampleEdBtn">Load</button></td>
             </tr>
           </tbody>
         </table>
@@ -544,7 +428,7 @@ pre.code-output,
             <span id="sourceCertStatusBadge" style="font-weight:bold;">Valid</span>
           </div>
           <div class="meta-row">
-            <span class="meta-label">Key & Cipher:</span><br>
+            <span class="meta-label">Key &amp; Cipher:</span><br>
             <span id="sourceKeySpec" class="meta-val">—</span>
           </div>
           <div class="meta-row">
@@ -572,9 +456,7 @@ pre.code-output,
         <!-- Right: CSR Configuration Form -->
         <div>
           <!-- Subject DN Form -->
-          <div style="font-weight: bold; border-bottom: 1px solid var(--border-light); margin-bottom: 8px; padding-bottom: 2px;">
-            Subject Distinguished Name (DN)
-          </div>
+          <div class="section-sub">Subject Distinguished Name (DN)</div>
           <table class="form-table">
             <tr>
               <td class="label-cell"><label for="dnCN">Common Name (CN) *:</label></td>
@@ -611,7 +493,7 @@ pre.code-output,
           </table>
 
           <!-- SAN Editor -->
-          <div style="font-weight: bold; border-bottom: 1px solid var(--border-light); margin: 12px 0 8px; padding-bottom: 2px; display: flex; justify-content: space-between; align-items: center;">
+          <div class="section-sub" style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
             <span>Subject Alternative Names (SAN)</span>
             <button type="button" id="syncCnSanBtn">Sync CN to SAN</button>
           </div>
@@ -619,16 +501,16 @@ pre.code-output,
           <button type="button" id="addSanBtn">+ Add SAN Entry</button>
 
           <!-- Key & Digest Selection -->
-          <div style="font-weight: bold; border-bottom: 1px solid var(--border-light); margin: 14px 0 8px; padding-bottom: 2px;">
-            Cryptographic Key Parameters & Digest
+          <div class="section-sub" style="margin-top: 14px;">
+            Cryptographic Key Parameters &amp; Digest
             <span id="keyMatchBadge" style="font-size: 11px; margin-left: 8px; color: var(--highlight-match);">[Exact Match]</span>
           </div>
           <table class="form-table">
             <tr>
-              <td class="label-cell"><label for="keyTypeSelect">Key Algorithm & Parameters:</label></td>
+              <td class="label-cell"><label for="keyTypeSelect">Key Algorithm &amp; Parameters:</label></td>
               <td>
                 <select id="keyTypeSelect">
-                  <optgroup label="RSA (Standard Legacy & Enterprise)">
+                  <optgroup label="RSA (Standard Legacy &amp; Enterprise)">
                     <option value="RSA:2048">RSA 2048-bit (Standard Compatible)</option>
                     <option value="RSA:3072">RSA 3072-bit (High Security)</option>
                     <option value="RSA:4096">RSA 4096-bit (Maximum Security)</option>
@@ -663,9 +545,7 @@ pre.code-output,
           </table>
 
           <!-- Extensions -->
-          <div style="font-weight: bold; border-bottom: 1px solid var(--border-light); margin: 14px 0 8px; padding-bottom: 2px;">
-            Requested Extensions
-          </div>
+          <div class="section-sub" style="margin-top: 14px;">Requested Extensions</div>
           <div style="margin-bottom: 14px; font-size: 12px;">
             <label style="font-weight:normal; margin-right: 12px;">
               <input type="checkbox" id="checkSAN" checked> Include SAN Extension
@@ -682,8 +562,8 @@ pre.code-output,
           </div>
 
           <!-- Submit Button -->
-          <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-dark);">
-            <button type="button" class="btn-primary btn-hero" id="generateCsrBtn">
+          <div style="margin-top: 14px; padding-top: 8px; border-top: 1px solid #cccccc;">
+            <button type="button" class="btn-hero" id="generateCsrBtn">
               <span id="genBtnSpinner" class="spinner hidden">(generating...) </span>
               <span id="genBtnText">Generate CSR and Private Key</span>
             </button>
@@ -694,7 +574,7 @@ pre.code-output,
 
     <!-- STEP 3: Generated Output -->
     <fieldset id="stepOutput" class="hidden">
-      <legend>Step 3: Generated CSR, Key Pair & Export Tools</legend>
+      <legend>Step 3: Generated CSR, Key Pair &amp; Export Tools</legend>
 
       <div class="notice-box notice-success" style="font-size: 11px;">
         <b>Security Note:</b> Key pair was generated in memory. Private key never leaves this machine.
@@ -721,8 +601,8 @@ pre.code-output,
         </div>
       </div>
 
-      <!-- Item 1: OpenSSL Configuration File (req.cnf) -->
-      <div style="margin-bottom: 14px; border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <!-- OpenSSL Configuration File -->
+      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>OpenSSL Configuration File (<code>request.cnf</code>):</label>
         <pre class="code-output" id="openSslCnfView" style="max-height: 120px;"></pre>
         <div>
@@ -731,8 +611,8 @@ pre.code-output,
         </div>
       </div>
 
-      <!-- Item 2: PKCS#12 Export Bundle -->
-      <div style="margin-bottom: 14px; border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <!-- PKCS#12 Export Bundle -->
+      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>Export PKCS#12 (<code>.p12</code> / <code>.pfx</code>) Bundle (Windows/IIS, Azure, Tomcat):</label>
         <table class="form-table" style="max-width: 600px; margin-top: 4px;">
           <tr>
@@ -752,8 +632,8 @@ pre.code-output,
         </table>
       </div>
 
-      <!-- Item 6: Let's Encrypt / Certbot / ACME Renewal Commands -->
-      <div style="margin-bottom: 14px; border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <!-- Certbot / ACME Commands -->
+      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>Automated CA Issuance Commands (Certbot / Let's Encrypt / ACME):</label>
         <pre class="code-output" id="certbotCmdView" style="max-height: 110px;"></pre>
         <div>
@@ -762,7 +642,7 @@ pre.code-output,
       </div>
 
       <!-- OpenSSL CLI Verification -->
-      <div style="margin-bottom: 14px; border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>OpenSSL CLI Verification Commands:</label>
         <pre class="code-output" id="openSslCmdView" style="max-height: 80px;"></pre>
         <div>
@@ -771,7 +651,7 @@ pre.code-output,
       </div>
 
       <!-- Comparison Table -->
-      <div style="border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <div style="border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>Snap-In Replacement Verification Table:</label>
         <table class="data-table" id="comparisonTable" style="margin-top: 4px;">
           <thead>
@@ -795,9 +675,9 @@ pre.code-output,
     <span id="toastMsg">Copied!</span>
   </div>
 
-  <!-- Bottom Left Link Widget (Matching cwmoriarty.com) -->
+  <!-- Bottom Left Link Widget (cwmoriarty.com style) -->
   <div class="libleft">
-    <small><a href="https://cwmoriarty.com">cwmoriarty.com</a> &middot; <a href="https://github.com/cwmoriarty/csrgen">github</a></small>
+    <small><a href="https://cwmoriarty.com">cwmoriarty.com</a></small>
   </div>
 
   <!-- Scripts -->

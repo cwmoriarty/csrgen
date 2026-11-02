@@ -15,21 +15,20 @@
     <!-- STEP 1: Provide Source Certificate -->
     <fieldset id="stepInput">
       <legend>Step 1: Input Existing Certificate</legend>
-      <div class="section-desc">Select how you want to provide the existing certificate:</div>
 
       <!-- Tab Buttons -->
       <div class="tabs-nav" role="tablist">
-        <button type="button" class="tab-btn" id="tabUrlBtn" role="tab" aria-selected="true" aria-controls="tabUrlPanel">Live HTTPS URL</button>
-        <button type="button" class="tab-btn" id="tabUploadBtn" role="tab" aria-selected="false" aria-controls="tabUploadPanel">Upload File (.crt / .pem / .der)</button>
+        <button type="button" class="tab-btn" id="tabUrlBtn" role="tab" aria-selected="true" aria-controls="tabUrlPanel">URL</button>
+        <button type="button" class="tab-btn" id="tabUploadBtn" role="tab" aria-selected="false" aria-controls="tabUploadPanel">Upload File</button>
         <button type="button" class="tab-btn" id="tabPasteBtn" role="tab" aria-selected="false" aria-controls="tabPastePanel">Paste PEM</button>
-        <button type="button" class="tab-btn" id="tabDemoBtn" role="tab" aria-selected="false" aria-controls="tabDemoPanel">Quick Samples</button>
+        <button type="button" class="tab-btn" id="tabDemoBtn" role="tab" aria-selected="false" aria-controls="tabDemoPanel">Help</button>
       </div>
 
       <!-- Tab 1: URL Fetch -->
       <div class="tab-panel active" id="tabUrlPanel" role="tabpanel">
         <table class="form-table" style="max-width: 650px;">
           <tr>
-            <td class="label-cell"><label for="urlInput">HTTPS URL / Hostname:</label></td>
+            <td class="label-cell"><label for="urlInput">URL:</label></td>
             <td>
               <input type="text" id="urlInput" placeholder="https://example.com or host.domain:8443" style="width: 320px;">
               <button type="button" class="btn-primary" id="fetchUrlBtn">
@@ -44,7 +43,7 @@
 
       <!-- Tab 2: Upload File -->
       <div class="tab-panel" id="tabUploadPanel" role="tabpanel">
-        <div id="dropZone" style="border: 1px dashed var(--border-dark); padding: 12px; background: var(--bg-panel); margin-bottom: 8px;">
+        <div id="dropZone" style="padding: 8px 0; margin-bottom: 8px;">
           <label for="fileInput">Select or drop certificate file (.crt, .pem, .cer, .der):</label><br>
           <input type="file" id="fileInput" accept=".crt,.pem,.cer,.der" style="margin-top: 6px;">
         </div>
@@ -59,31 +58,33 @@
         </div>
       </div>
 
-      <!-- Tab 4: Quick Samples -->
+      <!-- Tab 4: Help -->
       <div class="tab-panel" id="tabDemoPanel" role="tabpanel">
+        <p>CSRGen generates a Certificate Signing Request (CSR) that matches the cipher type, key size, subject, and SANs of an existing certificate &mdash; making it easy to renew or replace a cert without misconfiguring clients or fat-fingering fields.</p>
+        <p>Load a sample below to try it out:</p>
         <table class="data-table">
           <thead>
             <tr>
-              <th>Sample Preset</th>
+              <th>Sample</th>
               <th>Parameters</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><b>Multi-Domain RSA Certificate</b></td>
-              <td>RSA 2048-bit with SHA-256; CN=payments.acme-corp.com; 3 SANs (DNS & IP)</td>
-              <td><button type="button" id="loadSampleRsaBtn">Load RSA Sample</button></td>
+              <td><b>Multi-Domain RSA</b></td>
+              <td>RSA 2048-bit, SHA-256; CN=payments.acme-corp.com; 3 SANs (DNS &amp; IP)</td>
+              <td><button type="button" id="loadSampleRsaBtn">Load</button></td>
             </tr>
             <tr>
-              <td><b>Cloud API ECDSA Certificate</b></td>
-              <td>ECDSA NIST P-256 with SHA-256; CN=gateway.cloudapi.net; 2 SANs</td>
-              <td><button type="button" id="loadSampleEcBtn">Load ECDSA Sample</button></td>
+              <td><b>Cloud API ECDSA</b></td>
+              <td>ECDSA P-256, SHA-256; CN=gateway.cloudapi.net; 2 SANs</td>
+              <td><button type="button" id="loadSampleEcBtn">Load</button></td>
             </tr>
             <tr>
-              <td><b>Modern Ed25519 Certificate</b></td>
-              <td>Ed25519 Pure Signature; CN=ed25519.fast-auth.org</td>
-              <td><button type="button" id="loadSampleEdBtn">Load Ed25519 Sample</button></td>
+              <td><b>Ed25519</b></td>
+              <td>Ed25519 pure signature; CN=ed25519.fast-auth.org</td>
+              <td><button type="button" id="loadSampleEdBtn">Load</button></td>
             </tr>
           </tbody>
         </table>
@@ -107,7 +108,7 @@
             <span id="sourceCertStatusBadge" style="font-weight:bold;">Valid</span>
           </div>
           <div class="meta-row">
-            <span class="meta-label">Key & Cipher:</span><br>
+            <span class="meta-label">Key &amp; Cipher:</span><br>
             <span id="sourceKeySpec" class="meta-val">—</span>
           </div>
           <div class="meta-row">
@@ -135,9 +136,7 @@
         <!-- Right: CSR Configuration Form -->
         <div>
           <!-- Subject DN Form -->
-          <div style="font-weight: bold; border-bottom: 1px solid var(--border-light); margin-bottom: 8px; padding-bottom: 2px;">
-            Subject Distinguished Name (DN)
-          </div>
+          <div class="section-sub">Subject Distinguished Name (DN)</div>
           <table class="form-table">
             <tr>
               <td class="label-cell"><label for="dnCN">Common Name (CN) *:</label></td>
@@ -174,7 +173,7 @@
           </table>
 
           <!-- SAN Editor -->
-          <div style="font-weight: bold; border-bottom: 1px solid var(--border-light); margin: 12px 0 8px; padding-bottom: 2px; display: flex; justify-content: space-between; align-items: center;">
+          <div class="section-sub" style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
             <span>Subject Alternative Names (SAN)</span>
             <button type="button" id="syncCnSanBtn">Sync CN to SAN</button>
           </div>
@@ -182,16 +181,16 @@
           <button type="button" id="addSanBtn">+ Add SAN Entry</button>
 
           <!-- Key & Digest Selection -->
-          <div style="font-weight: bold; border-bottom: 1px solid var(--border-light); margin: 14px 0 8px; padding-bottom: 2px;">
-            Cryptographic Key Parameters & Digest
+          <div class="section-sub" style="margin-top: 14px;">
+            Cryptographic Key Parameters &amp; Digest
             <span id="keyMatchBadge" style="font-size: 11px; margin-left: 8px; color: var(--highlight-match);">[Exact Match]</span>
           </div>
           <table class="form-table">
             <tr>
-              <td class="label-cell"><label for="keyTypeSelect">Key Algorithm & Parameters:</label></td>
+              <td class="label-cell"><label for="keyTypeSelect">Key Algorithm &amp; Parameters:</label></td>
               <td>
                 <select id="keyTypeSelect">
-                  <optgroup label="RSA (Standard Legacy & Enterprise)">
+                  <optgroup label="RSA (Standard Legacy &amp; Enterprise)">
                     <option value="RSA:2048">RSA 2048-bit (Standard Compatible)</option>
                     <option value="RSA:3072">RSA 3072-bit (High Security)</option>
                     <option value="RSA:4096">RSA 4096-bit (Maximum Security)</option>
@@ -226,9 +225,7 @@
           </table>
 
           <!-- Extensions -->
-          <div style="font-weight: bold; border-bottom: 1px solid var(--border-light); margin: 14px 0 8px; padding-bottom: 2px;">
-            Requested Extensions
-          </div>
+          <div class="section-sub" style="margin-top: 14px;">Requested Extensions</div>
           <div style="margin-bottom: 14px; font-size: 12px;">
             <label style="font-weight:normal; margin-right: 12px;">
               <input type="checkbox" id="checkSAN" checked> Include SAN Extension
@@ -245,8 +242,8 @@
           </div>
 
           <!-- Submit Button -->
-          <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-dark);">
-            <button type="button" class="btn-primary btn-hero" id="generateCsrBtn">
+          <div style="margin-top: 14px; padding-top: 8px; border-top: 1px solid #cccccc;">
+            <button type="button" class="btn-hero" id="generateCsrBtn">
               <span id="genBtnSpinner" class="spinner hidden">(generating...) </span>
               <span id="genBtnText">Generate CSR and Private Key</span>
             </button>
@@ -257,7 +254,7 @@
 
     <!-- STEP 3: Generated Output -->
     <fieldset id="stepOutput" class="hidden">
-      <legend>Step 3: Generated CSR, Key Pair & Export Tools</legend>
+      <legend>Step 3: Generated CSR, Key Pair &amp; Export Tools</legend>
 
       <div class="notice-box notice-success" style="font-size: 11px;">
         <b>Security Note:</b> Key pair was generated in memory. Private key never leaves this machine.
@@ -284,8 +281,8 @@
         </div>
       </div>
 
-      <!-- Item 1: OpenSSL Configuration File (req.cnf) -->
-      <div style="margin-bottom: 14px; border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <!-- OpenSSL Configuration File -->
+      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>OpenSSL Configuration File (<code>request.cnf</code>):</label>
         <pre class="code-output" id="openSslCnfView" style="max-height: 120px;"></pre>
         <div>
@@ -294,8 +291,8 @@
         </div>
       </div>
 
-      <!-- Item 2: PKCS#12 Export Bundle -->
-      <div style="margin-bottom: 14px; border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <!-- PKCS#12 Export Bundle -->
+      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>Export PKCS#12 (<code>.p12</code> / <code>.pfx</code>) Bundle (Windows/IIS, Azure, Tomcat):</label>
         <table class="form-table" style="max-width: 600px; margin-top: 4px;">
           <tr>
@@ -315,8 +312,8 @@
         </table>
       </div>
 
-      <!-- Item 6: Let's Encrypt / Certbot / ACME Renewal Commands -->
-      <div style="margin-bottom: 14px; border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <!-- Certbot / ACME Commands -->
+      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>Automated CA Issuance Commands (Certbot / Let's Encrypt / ACME):</label>
         <pre class="code-output" id="certbotCmdView" style="max-height: 110px;"></pre>
         <div>
@@ -325,7 +322,7 @@
       </div>
 
       <!-- OpenSSL CLI Verification -->
-      <div style="margin-bottom: 14px; border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <div style="margin-bottom: 14px; border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>OpenSSL CLI Verification Commands:</label>
         <pre class="code-output" id="openSslCmdView" style="max-height: 80px;"></pre>
         <div>
@@ -334,7 +331,7 @@
       </div>
 
       <!-- Comparison Table -->
-      <div style="border-top: 1px solid var(--border-light); padding-top: 8px;">
+      <div style="border-top: 1px solid #cccccc; padding-top: 8px;">
         <label>Snap-In Replacement Verification Table:</label>
         <table class="data-table" id="comparisonTable" style="margin-top: 4px;">
           <thead>
@@ -358,9 +355,9 @@
     <span id="toastMsg">Copied!</span>
   </div>
 
-  <!-- Bottom Left Link Widget (Matching cwmoriarty.com) -->
+  <!-- Bottom Left Link Widget (cwmoriarty.com style) -->
   <div class="libleft">
-    <small><a href="https://cwmoriarty.com">cwmoriarty.com</a> &middot; <a href="https://github.com/cwmoriarty/csrgen">github</a></small>
+    <small><a href="https://cwmoriarty.com">cwmoriarty.com</a></small>
   </div>
 
   <!-- Scripts -->
