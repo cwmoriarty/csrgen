@@ -760,6 +760,19 @@ pre.code-output,
             </tbody>
           </table>
         </div>
+
+        <!-- Renewal Calendar & Schedule -->
+        <div style="border-top: 1px solid #cccccc; padding-top: 10px; margin-top: 14px;">
+          <label>Certificate Renewal Schedule &amp; Calendar Alerts:</label>
+          <div id="renewalScheduleNotice" class="notice-box" style="margin: 6px 0 10px 0;">
+            <span id="renewalDatesDesc">Renewal alerts scheduled for 2 weeks and 1 week before expiration.</span>
+          </div>
+          <div style="margin-top: 6px;">
+            <button type="button" class="btn-download" id="addAppleCalBtn">Add to Apple / Webcal</button>
+            <button type="button" class="btn-download" id="addGoogleCalBtn">Add to Google Calendar</button>
+            <button type="button" class="btn-download" id="downloadIcsBtn">Download .ics</button>
+          </div>
+        </div>
       </div>
     </fieldset>
   </div>
@@ -1077,7 +1090,13 @@ const elements = {
   downloadCnfBtn: document.getElementById("downloadCnfBtn"),
   copyCertbotCmdBtn: document.getElementById("copyCertbotCmdBtn"),
   copyCmdBtn: document.getElementById("copyCmdBtn"),
-  comparisonTableBody: document.getElementById("comparisonTableBody")
+  comparisonTableBody: document.getElementById("comparisonTableBody"),
+
+  // Renewal Calendar
+  renewalDatesDesc: document.getElementById("renewalDatesDesc"),
+  addAppleCalBtn: document.getElementById("addAppleCalBtn"),
+  addGoogleCalBtn: document.getElementById("addGoogleCalBtn"),
+  downloadIcsBtn: document.getElementById("downloadIcsBtn")
 };
 
 // Check Companion Server
@@ -1171,6 +1190,7 @@ function resetCertImport() {
   elements.pemTextarea.value = "";
   elements.urlErrorAlert.classList.add("hidden");
   elements.fetchBtnText.textContent = "Fetch Certificate";
+  updateRenewalScheduleUI();
   showToast("Reset to initial state");
 }
 
@@ -1610,6 +1630,106 @@ openssl req -in request.csr -verify -noout`;
     `;
     tbody.appendChild(tr);
   });
+
+  updateRenewalScheduleUI();
+}
+
+// Certificate Renewal & Calendar Alert Helpers
+function getCertificateExpiryInfo() {
+  const cn = (elements.dnCN && elements.dnCN.value.trim()) ||
+             (state.parsedCert && state.parsedCert.subjectMap && state.parsedCert.subjectMap["CN"]) ||
+             "domain.com";
+
+  let expiryDate;
+  let isFromCert = false;
+  if (state.parsedCert && state.parsedCert.notAfter instanceof Date && !isNaN(state.parsedCert.notAfter)) {
+    expiryDate = new Date(state.parsedCert.notAfter);
+    isFromCert = true;
+  } else {
+    // Default: 90 days from now (standard TLS certificate renewal lifetime)
+    expiryDate = new Date(Date.now() + 90 * 86400000);
+  }
+
+  const twoWeeks = new Date(expiryDate.getTime() - 14 * 86400000);
+  const oneWeek = new Date(expiryDate.getTime() - 7 * 86400000);
+
+  return { cn, expiryDate, twoWeeks, oneWeek, isFromCert };
+}
+
+function formatIcsDate(d) {
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return `${year}${month}${day}`;
+}
+
+function formatIcsTimestamp(d) {
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const hours = String(d.getUTCHours()).padStart(2, "0");
+  const mins = String(d.getUTCMinutes()).padStart(2, "0");
+  const secs = String(d.getUTCSeconds()).padStart(2, "0");
+  return `${year}${month}${day}T${hours}${mins}${secs}Z`;
+}
+
+function generateRenewalICS(cn, expiryDate) {
+  const uid = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}@csrgen`;
+  const stamp = formatIcsTimestamp(new Date());
+  const start = formatIcsDate(expiryDate);
+  const nextDay = new Date(expiryDate.getTime() + 86400000);
+  const end = formatIcsDate(nextDay);
+
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//CSRGen//Certificate Renewal Schedule//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART;VALUE=DATE:${start}`,
+    `DTEND;VALUE=DATE:${end}`,
+    `SUMMARY:Renew TLS Certificate: ${cn}`,
+    `DESCRIPTION:Certificate for ${cn} expires on ${expiryDate.toDateString()}. Schedule renewal via CSRGen (https://cwmoriarty.github.io/csrgen/) or your CA. Renewal reminders set for 2 weeks and 1 week prior.`,
+    `LOCATION:${cn}`,
+    "BEGIN:VALARM",
+    "TRIGGER:-P14D",
+    "ACTION:DISPLAY",
+    `DESCRIPTION:Reminder: TLS certificate for ${cn} expires in 2 weeks!`,
+    "END:VALARM",
+    "BEGIN:VALARM",
+    "TRIGGER:-P7D",
+    "ACTION:DISPLAY",
+    `DESCRIPTION:URGENT: TLS certificate for ${cn} expires in 1 week!`,
+    "END:VALARM",
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ].join("\r\n");
+}
+
+function getGoogleCalendarUrl(cn, expiryDate) {
+  const startStr = formatIcsDate(expiryDate);
+  const nextDay = new Date(expiryDate.getTime() + 86400000);
+  const endStr = formatIcsDate(nextDay);
+  const title = `Renew TLS Certificate: ${cn}`;
+  const details = `TLS Certificate for ${cn} expires on ${expiryDate.toDateString()}. Make sure to renew in advance (e.g. using CSRGen at https://cwmoriarty.github.io/csrgen/). Reminders recommended 2 weeks and 1 week prior.`;
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startStr}/${endStr}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(cn)}`;
+}
+
+function updateRenewalScheduleUI() {
+  if (!elements.renewalDatesDesc) return;
+  const { cn, expiryDate, twoWeeks, oneWeek, isFromCert } = getCertificateExpiryInfo();
+
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  const expStr = expiryDate.toLocaleDateString(undefined, options);
+  const twoWeekStr = twoWeeks.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const oneWeekStr = oneWeek.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+  const certNote = isFromCert ? "Imported Certificate" : "Standard 90-day Renewal";
+  elements.renewalDatesDesc.textContent =
+    `[${certNote}] Expiration: ${expStr} | Reminders scheduled for: ${twoWeekStr} (2 weeks before) and ${oneWeekStr} (1 week before).`;
 }
 
 // Download Helper
@@ -1908,6 +2028,36 @@ function initEventListeners() {
       alert("Client PKCS#12 export error: " + err.message + "\n\nTip: You can use the OpenSSL CLI command:\nopenssl pkcs12 -export -out bundle.p12 -inkey private.key -in cert.crt -passout pass:" + password);
     }
   });
+
+  // 8. Renewal Calendar Event Listeners
+  if (elements.addAppleCalBtn) {
+    elements.addAppleCalBtn.addEventListener("click", () => {
+      const { cn, expiryDate } = getCertificateExpiryInfo();
+      const ics = generateRenewalICS(cn, expiryDate);
+      const safeCn = cn.replace(/[^a-zA-Z0-9_.-]/g, "_");
+      downloadFile(ics, `${safeCn}-renewal.ics`, "text/calendar;charset=utf-8");
+      showToast("Downloaded renewal .ics for Apple / Webcal");
+    });
+  }
+
+  if (elements.addGoogleCalBtn) {
+    elements.addGoogleCalBtn.addEventListener("click", () => {
+      const { cn, expiryDate } = getCertificateExpiryInfo();
+      const url = getGoogleCalendarUrl(cn, expiryDate);
+      window.open(url, "_blank", "noopener,noreferrer");
+      showToast("Opening Google Calendar template...");
+    });
+  }
+
+  if (elements.downloadIcsBtn) {
+    elements.downloadIcsBtn.addEventListener("click", () => {
+      const { cn, expiryDate } = getCertificateExpiryInfo();
+      const ics = generateRenewalICS(cn, expiryDate);
+      const safeCn = cn.replace(/[^a-zA-Z0-9_.-]/g, "_");
+      downloadFile(ics, `${safeCn}-renewal.ics`, "text/calendar;charset=utf-8");
+      showToast("Downloaded renewal schedule .ics");
+    });
+  }
 }
 
 // Bootstrap
@@ -1915,6 +2065,7 @@ window.addEventListener("DOMContentLoaded", () => {
   setupTabs();
   initEventListeners();
   checkServerStatus();
+  updateRenewalScheduleUI();
 });
 
 </script>
