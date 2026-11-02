@@ -2,6 +2,8 @@
 
 **CSRGen** is a self-contained, Web 1.0 style PKI application that generates matching Certificate Signing Requests (CSRs) and cryptographic key pairs matching the parameters (cipher types, key sizes, elliptic curves, subjects, and SAN extensions) of an existing certificate.
 
+👉 **Live Web App:** [https://cwmoriarty.github.io/csrgen/](https://cwmoriarty.github.io/csrgen/)
+
 ---
 
 ## Features
@@ -38,7 +40,11 @@
 
 ## Quick Start
 
-### Standalone (Browser Mode)
+### 🌐 Live Hosted Web App (Zero Install)
+Click and run CSRGen directly in your browser:  
+👉 **[https://cwmoriarty.github.io/csrgen/](https://cwmoriarty.github.io/csrgen/)** (or [cwmoriarty.com/csrgen](https://cwmoriarty.com/csrgen/))
+
+### Standalone (Offline / Air-Gapped)
 Open [`index.html`](index.html) directly in any web browser. File uploads, PEM pasting, key generation, and CSR downloads work 100% offline.
 
 ### Companion Server (Live HTTPS Inspection)
