@@ -309,6 +309,7 @@ table.data-table td {
   margin-bottom: 10px;
 }
 .notice-success { border-left-color: #007700; background-color: #f4faf4; }
+.notice-warn    { border-left-color: #bb6600; background-color: #fffaf0; }
 .notice-error   { border-left-color: #cc0000; background-color: #fff0f0; color: #990000; }
 
 /* Terminal output — cwmoriarty.com/ssl.html .output verbatim */
@@ -442,6 +443,41 @@ pre.code-output,
           </button>
         </div>
         <div id="urlErrorAlert" class="notice-box notice-error hidden"></div>
+
+        <!-- Offline & Fallback Guidance Box -->
+        <div id="offlineGuidanceBox" class="notice-box notice-warn hidden" style="margin-top: 10px; line-height: 1.5;">
+          <div style="font-weight: bold; margin-bottom: 4px;" id="offlineGuidanceTitle">Offline / Manual Import Mode</div>
+          <div id="offlineGuidanceMsg" style="margin-bottom: 8px;">
+            Could not retrieve live certificate over network (browser offline or server unreachable). CSRGen operates 100% offline in browser memory; you can import your certificate using any of the following methods:
+          </div>
+
+          <div style="margin-bottom: 10px;">
+            <b>1. Browser 1-Click Export (Zero Tools, 100% Offline):</b>
+            <div style="margin: 3px 0 6px 12px;">
+              • <b>Chrome / Edge:</b> Click the tune/padlock icon next to the address bar → <i>Connection is secure</i> → <i>Certificate is valid</i> → <i>Details</i> → <i>Export...</i> (save <code>.crt</code>).<br>
+              • <b>Firefox:</b> Click padlock → <i>Connection secure</i> → <i>More Information</i> → <i>View Certificate</i> → <i>Download PEM</i>.<br>
+              • <b>Safari:</b> Click padlock → <i>Show Certificate</i> → Option-drag certificate icon to Desktop.
+            </div>
+            <button type="button" class="btn-html" id="quickGoUploadBtn" style="font-size: 12px; padding: 2px 8px;">Switch to "Upload File" Tab</button>
+          </div>
+
+          <div style="margin-bottom: 10px;">
+            <b>2. OpenSSL 1-Line CLI (macOS / Linux terminal):</b>
+            <div style="margin: 3px 0 4px 0;">Run this pre-populated command to dump the certificate directly to your clipboard:</div>
+            <div class="code-box-wrapper" style="margin: 4px 0;">
+              <button type="button" class="btn-copy-corner" id="copyCliCmdBtn">Copy</button>
+              <pre class="code-output" id="offlineCliCmdView" style="max-height: 48px; padding: 6px; font-size: 11px; white-space: pre-wrap; word-break: break-all;"></pre>
+            </div>
+            <div style="margin-bottom: 6px; font-size: 11px; color: #555;"><i>Tip: On Linux, replace <code>pbcopy</code> with <code>xclip -sel clip</code>.</i></div>
+            <button type="button" class="btn-html" id="quickGoPasteBtn" style="font-size: 12px; padding: 2px 8px;">Switch to "Paste PEM" Tab</button>
+          </div>
+
+          <div>
+            <b>3. Sample Presets:</b>
+            <span style="margin: 0 6px;">Test instantly with pre-loaded RSA, ECDSA, or Ed25519 certificates.</span>
+            <button type="button" class="btn-html" id="quickGoHelpBtn" style="font-size: 12px; padding: 2px 8px;">Switch to "Help" Tab</button>
+          </div>
+        </div>
       </div>
 
       <!-- Tab 2: Upload File -->
@@ -1096,7 +1132,17 @@ const elements = {
   renewalDatesDesc: document.getElementById("renewalDatesDesc"),
   addAppleCalBtn: document.getElementById("addAppleCalBtn"),
   addGoogleCalBtn: document.getElementById("addGoogleCalBtn"),
-  downloadIcsBtn: document.getElementById("downloadIcsBtn")
+  downloadIcsBtn: document.getElementById("downloadIcsBtn"),
+
+  // Offline & Fallback Guidance
+  offlineGuidanceBox: document.getElementById("offlineGuidanceBox"),
+  offlineGuidanceTitle: document.getElementById("offlineGuidanceTitle"),
+  offlineGuidanceMsg: document.getElementById("offlineGuidanceMsg"),
+  offlineCliCmdView: document.getElementById("offlineCliCmdView"),
+  copyCliCmdBtn: document.getElementById("copyCliCmdBtn"),
+  quickGoUploadBtn: document.getElementById("quickGoUploadBtn"),
+  quickGoPasteBtn: document.getElementById("quickGoPasteBtn"),
+  quickGoHelpBtn: document.getElementById("quickGoHelpBtn")
 };
 
 // Check Companion Server
@@ -1137,12 +1183,7 @@ function setupTabs() {
 
   step1Tabs.forEach(({ btn, panel }) => {
     btn.addEventListener("click", () => {
-      step1Tabs.forEach(t => {
-        t.btn.setAttribute("aria-selected", "false");
-        t.panel.classList.remove("active");
-      });
-      btn.setAttribute("aria-selected", "true");
-      panel.classList.add("active");
+      selectStep1Tab(btn, panel);
     });
   });
 
@@ -1157,6 +1198,21 @@ function setupTabs() {
       selectStep2Tab(btn, panel);
     });
   });
+}
+
+function selectStep1Tab(btn, panel) {
+  const step1Tabs = [
+    { btn: elements.tabUrlBtn, panel: elements.tabUrlPanel },
+    { btn: elements.tabUploadBtn, panel: elements.tabUploadPanel },
+    { btn: elements.tabPasteBtn, panel: elements.tabPastePanel },
+    { btn: elements.tabDemoBtn, panel: elements.tabDemoPanel }
+  ];
+  step1Tabs.forEach(t => {
+    t.btn.setAttribute("aria-selected", "false");
+    t.panel.classList.remove("active");
+  });
+  btn.setAttribute("aria-selected", "true");
+  panel.classList.add("active");
 }
 
 function selectStep2Tab(btn, panel) {
@@ -1189,6 +1245,7 @@ function resetCertImport() {
   elements.fileInput.value = "";
   elements.pemTextarea.value = "";
   elements.urlErrorAlert.classList.add("hidden");
+  if (elements.offlineGuidanceBox) elements.offlineGuidanceBox.classList.add("hidden");
   elements.fetchBtnText.textContent = "Fetch Certificate";
   updateRenewalScheduleUI();
   showToast("Reset to initial state");
@@ -1204,6 +1261,9 @@ async function handleCertificateLoaded(rawInput) {
     } else {
       state.rawCertPem = window.SnapInPKI.toPem(rawInput, "CERTIFICATE");
     }
+
+    if (elements.offlineGuidanceBox) elements.offlineGuidanceBox.classList.add("hidden");
+    if (elements.urlErrorAlert) elements.urlErrorAlert.classList.add("hidden");
 
     populateConfigurationForm(parsed);
 
@@ -1771,6 +1831,133 @@ async function copyToClipboard(text, successMsg, btnElement) {
   }
 }
 
+// Hostname, CRT.sh & Edge Worker Hybrid Resolver
+function extractHostAndPort(rawInput) {
+  let str = (rawInput || "").trim();
+  if (!str) return { host: "example.com", port: 443 };
+  if (!str.startsWith("http://") && !str.startsWith("https://")) {
+    str = "https://" + str;
+  }
+  try {
+    const u = new URL(str);
+    const host = u.hostname || "example.com";
+    const port = u.port ? parseInt(u.port, 10) : 443;
+    return { host, port };
+  } catch (e) {
+    const clean = rawInput.trim().replace(/^https?:\/\//i, "").split("/")[0];
+    const parts = clean.split(":");
+    return { host: parts[0] || "example.com", port: parts[1] ? parseInt(parts[1], 10) : 443 };
+  }
+}
+
+function showOfflineGuidance(host, port, message) {
+  if (!elements.offlineGuidanceBox) return;
+  const safeHost = host || "example.com";
+  const safePort = port || 443;
+
+  if (elements.offlineGuidanceMsg) {
+    elements.offlineGuidanceMsg.textContent = message || "Network fetch is unavailable.";
+  }
+
+  const cliCmd = `openssl s_client -connect ${safeHost}:${safePort} -servername ${safeHost} </dev/null 2>/dev/null | openssl x509 | pbcopy`;
+  if (elements.offlineCliCmdView) {
+    elements.offlineCliCmdView.textContent = cliCmd;
+  }
+
+  elements.offlineGuidanceBox.classList.remove("hidden");
+}
+
+async function fetchFromCrtSh(host) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 4500);
+
+  try {
+    const queryUrl = `https://crt.sh/?q=${encodeURIComponent(host)}&output=json`;
+    const res = await fetch(queryUrl, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    if (!res.ok) return null;
+    const certs = await res.json();
+    if (!Array.isArray(certs) || certs.length === 0) return null;
+
+    // Filter and sort by not_after descending to get the newest active cert
+    const validCerts = certs.filter(c => c && c.id);
+    if (validCerts.length === 0) return null;
+
+    validCerts.sort((a, b) => {
+      const aTime = a.not_after ? new Date(a.not_after).getTime() : 0;
+      const bTime = b.not_after ? new Date(b.not_after).getTime() : 0;
+      return bTime - aTime;
+    });
+
+    for (let i = 0; i < Math.min(validCerts.length, 2); i++) {
+      const candidate = validCerts[i];
+      const pemController = new AbortController();
+      const pemTimeoutId = setTimeout(() => pemController.abort(), 3500);
+      try {
+        const pemRes = await fetch(`https://crt.sh/?d=${candidate.id}`, { signal: pemController.signal });
+        clearTimeout(pemTimeoutId);
+        if (pemRes.ok) {
+          const text = await pemRes.text();
+          if (text.includes("-----BEGIN CERTIFICATE-----")) {
+            return text;
+          }
+        }
+      } catch (e) {
+        clearTimeout(pemTimeoutId);
+      }
+    }
+    return null;
+  } catch (e) {
+    clearTimeout(timeoutId);
+    return null;
+  }
+}
+
+async function fetchFromCloudflareWorker(host, port, originalUrl) {
+  // If companion server is running locally
+  if (state.hasCompanionServer) {
+    try {
+      const companionRes = await fetch(`/api/fetch-cert?url=${encodeURIComponent(originalUrl)}`);
+      if (companionRes.ok) {
+        const data = await companionRes.json();
+        if (data && data.pem) return data.pem;
+      }
+    } catch (e) {}
+  }
+
+  // Cloudflare Edge Worker endpoints
+  const endpoints = [
+    `https://cert.cwmoriarty.workers.dev/?host=${encodeURIComponent(host)}&port=${port}`,
+    `https://csrgen.cwmoriarty.workers.dev/?url=${encodeURIComponent(originalUrl)}`
+  ];
+
+  for (const ep of endpoints) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4500);
+    try {
+      const res = await fetch(ep, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const data = await res.json();
+          if (data && data.pem && data.pem.includes("-----BEGIN CERTIFICATE-----")) {
+            return data.pem;
+          }
+        } else {
+          const text = await res.text();
+          if (text.includes("-----BEGIN CERTIFICATE-----")) {
+            return text;
+          }
+        }
+      }
+    } catch (e) {
+      clearTimeout(timeoutId);
+    }
+  }
+  return null;
+}
+
 // Event Listeners Initialization
 function initEventListeners() {
   // 1. URL Fetch Form
@@ -1786,24 +1973,45 @@ function initEventListeners() {
       return;
     }
 
+    const { host, port } = extractHostAndPort(url);
+
     elements.urlErrorAlert.classList.add("hidden");
+    if (elements.offlineGuidanceBox) elements.offlineGuidanceBox.classList.add("hidden");
+
+    // Check if offline
+    if (!navigator.onLine) {
+      elements.urlErrorAlert.textContent = "Browser is offline (network disconnected).";
+      elements.urlErrorAlert.classList.remove("hidden");
+      showOfflineGuidance(host, port, "Offline mode detected: Network requests cannot be made. Use offline export or CLI options below:");
+      return;
+    }
+
     elements.fetchBtnSpinner.classList.remove("hidden");
-    elements.fetchBtnText.textContent = "Connecting...";
+    elements.fetchBtnText.textContent = "Querying crt.sh...";
     elements.fetchUrlBtn.disabled = true;
 
     try {
-      const apiUrl = `/api/fetch-cert?url=${encodeURIComponent(url)}`;
-      const res = await fetch(apiUrl);
-      const data = await res.json();
+      // Step 1: Query crt.sh
+      let pem = await fetchFromCrtSh(host);
+      let sourceName = "crt.sh (Certificate Transparency)";
 
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to fetch certificate from " + url);
+      // Step 2: Query Cloudflare Worker if crt.sh is unavailable/empty
+      if (!pem) {
+        elements.fetchBtnText.textContent = "Querying Cloudflare Worker...";
+        pem = await fetchFromCloudflareWorker(host, port, url);
+        sourceName = "Cloudflare Edge Worker";
       }
 
-      handleCertificateLoaded(data.pem);
+      if (!pem) {
+        throw new Error(`Could not retrieve certificate for "${host}" via crt.sh or Cloudflare Edge Worker.`);
+      }
+
+      handleCertificateLoaded(pem);
+      showToast(`Certificate fetched via ${sourceName}!`);
     } catch (err) {
-      elements.urlErrorAlert.textContent = `TLS Error: ${err.message}. If running without local server, please use file upload, paste PEM, or sample presets.`;
+      elements.urlErrorAlert.textContent = `${err.message}`;
       elements.urlErrorAlert.classList.remove("hidden");
+      showOfflineGuidance(host, port, "Network lookup was unsuccessful. Use offline browser export or OpenSSL CLI below:");
     } finally {
       elements.fetchBtnSpinner.classList.add("hidden");
       if (state.isCertLoaded) {
@@ -1812,6 +2020,56 @@ function initEventListeners() {
         elements.fetchBtnText.textContent = "Fetch Certificate";
       }
       elements.fetchUrlBtn.disabled = false;
+    }
+  });
+
+  // Dynamic update of CLI command as user types
+  elements.urlInput.addEventListener("input", () => {
+    const { host, port } = extractHostAndPort(elements.urlInput.value);
+    if (elements.offlineCliCmdView) {
+      elements.offlineCliCmdView.textContent = `openssl s_client -connect ${host}:${port} -servername ${host} </dev/null 2>/dev/null | openssl x509 | pbcopy`;
+    }
+  });
+
+  // Offline guidance buttons
+  if (elements.copyCliCmdBtn) {
+    elements.copyCliCmdBtn.addEventListener("click", (e) => {
+      const text = elements.offlineCliCmdView.textContent;
+      copyToClipboard(text, "OpenSSL CLI command copied!", e.currentTarget);
+    });
+  }
+
+  if (elements.quickGoUploadBtn) {
+    elements.quickGoUploadBtn.addEventListener("click", () => {
+      selectStep1Tab(elements.tabUploadBtn, elements.tabUploadPanel);
+    });
+  }
+
+  if (elements.quickGoPasteBtn) {
+    elements.quickGoPasteBtn.addEventListener("click", () => {
+      selectStep1Tab(elements.tabPasteBtn, elements.tabPastePanel);
+      elements.pemTextarea.focus();
+    });
+  }
+
+  if (elements.quickGoHelpBtn) {
+    elements.quickGoHelpBtn.addEventListener("click", () => {
+      selectStep1Tab(elements.tabDemoBtn, elements.tabDemoPanel);
+    });
+  }
+
+  // Network offline / online events
+  window.addEventListener("offline", () => {
+    const { host, port } = extractHostAndPort(elements.urlInput.value || "example.com");
+    elements.urlErrorAlert.textContent = "Browser is offline (network disconnected).";
+    elements.urlErrorAlert.classList.remove("hidden");
+    showOfflineGuidance(host, port, "Browser is offline. CSRGen runs 100% locally in your browser memory—use offline import below:");
+  });
+
+  window.addEventListener("online", () => {
+    if (elements.urlErrorAlert && elements.urlErrorAlert.textContent.includes("Browser is offline")) {
+      elements.urlErrorAlert.classList.add("hidden");
+      if (elements.offlineGuidanceBox) elements.offlineGuidanceBox.classList.add("hidden");
     }
   });
 
@@ -2066,6 +2324,13 @@ window.addEventListener("DOMContentLoaded", () => {
   initEventListeners();
   checkServerStatus();
   updateRenewalScheduleUI();
+
+  if (!navigator.onLine) {
+    const { host, port } = extractHostAndPort(elements.urlInput.value || "example.com");
+    elements.urlErrorAlert.textContent = "Browser is offline (network disconnected).";
+    elements.urlErrorAlert.classList.remove("hidden");
+    showOfflineGuidance(host, port, "Browser is offline. CSRGen operates 100% offline in your browser memory—import your cert below:");
+  }
 });
 
 </script>
